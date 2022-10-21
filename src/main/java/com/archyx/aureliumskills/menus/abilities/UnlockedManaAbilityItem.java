@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.menus.abilities;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.mana.MAbility;
@@ -32,34 +32,34 @@ public class UnlockedManaAbilityItem extends AbstractManaAbilityItem implements 
     @Override
     public String onPlaceholderReplace(String placeholder, Player player, ActiveMenu menu, PlaceholderData data, MAbility mAbility) {
         Locale locale = plugin.getLang().getLocale(player);
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return placeholder;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return placeholder;
         switch (placeholder) {
             case "name":
                 return mAbility.getDisplayName(locale);
             case "your_ability_level":
-                if (isNotMaxed(playerData, mAbility)) {
+                if (isNotMaxed(pluginPlayer, mAbility)) {
                     return TextUtil.replace(Lang.getMessage(MenuMessage.YOUR_ABILITY_LEVEL, locale),
-                            "{level}", String.valueOf(playerData.getManaAbilityLevel(mAbility)));
+                            "{level}", String.valueOf(pluginPlayer.getManaAbilityLevel(mAbility)));
                 } else {
                     return TextUtil.replace(Lang.getMessage(MenuMessage.YOUR_ABILITY_LEVEL_MAXED, locale),
-                            "{level}", String.valueOf(playerData.getManaAbilityLevel(mAbility)));
+                            "{level}", String.valueOf(pluginPlayer.getManaAbilityLevel(mAbility)));
                 }
             case "unlocked_desc":
-                if (isNotMaxed(playerData, mAbility)) {
+                if (isNotMaxed(pluginPlayer, mAbility)) {
                     return TextUtil.replace(Lang.getMessage(MenuMessage.UNLOCKED_DESC, locale),
                             "{skill}", mAbility.getSkill().getDisplayName(locale),
-                            "{level}", RomanNumber.toRoman(getNextUpgradeLevel(mAbility, playerData)),
+                            "{level}", RomanNumber.toRoman(getNextUpgradeLevel(mAbility, pluginPlayer)),
                             "{desc}", TextUtil.replace(mAbility.getDescription(locale),
-                                    "{value}", getUpgradeValue(mAbility, playerData),
+                                    "{value}", getUpgradeValue(mAbility, pluginPlayer),
                                     "{haste_level}", String.valueOf(manager.getOptionAsInt(mAbility, "haste_level", 10)),
-                                    "{duration}", getUpgradeDuration(mAbility, playerData)));
+                                    "{duration}", getUpgradeDuration(mAbility, pluginPlayer)));
                 } else {
                     return TextUtil.replace(Lang.getMessage(MenuMessage.UNLOCKED_DESC_MAXED, locale),
                             "{desc}", TextUtil.replace(mAbility.getDescription(locale),
-                                    "{value}", getUpgradeValue(mAbility, playerData),
+                                    "{value}", getUpgradeValue(mAbility, pluginPlayer),
                                     "{haste_level}", String.valueOf(manager.getOptionAsInt(mAbility, "haste_level", 10)),
-                                    "{duration}", getUpgradeDuration(mAbility, playerData)));
+                                    "{duration}", getUpgradeDuration(mAbility, pluginPlayer)));
                 }
             case "unlocked":
                 return Lang.getMessage(MenuMessage.UNLOCKED, locale);
@@ -67,25 +67,25 @@ public class UnlockedManaAbilityItem extends AbstractManaAbilityItem implements 
         return placeholder;
     }
 
-    private int getNextUpgradeLevel(MAbility mAbility, PlayerData playerData) {
+    private int getNextUpgradeLevel(MAbility mAbility, PluginPlayer pluginPlayer) {
         int unlock = manager.getUnlock(mAbility);
         int levelUp = manager.getLevelUp(mAbility);
-        return unlock + levelUp * playerData.getManaAbilityLevel(mAbility);
+        return unlock + levelUp * pluginPlayer.getManaAbilityLevel(mAbility);
     }
 
-    private String getUpgradeValue(MAbility mAbility, PlayerData playerData) {
-        String currentValue = NumberUtil.format1(manager.getDisplayValue(mAbility, playerData.getManaAbilityLevel(mAbility)));
-        String nextValue = NumberUtil.format1(manager.getDisplayValue(mAbility, playerData.getManaAbilityLevel(mAbility) + 1));
+    private String getUpgradeValue(MAbility mAbility, PluginPlayer pluginPlayer) {
+        String currentValue = NumberUtil.format1(manager.getDisplayValue(mAbility, pluginPlayer.getManaAbilityLevel(mAbility)));
+        String nextValue = NumberUtil.format1(manager.getDisplayValue(mAbility, pluginPlayer.getManaAbilityLevel(mAbility) + 1));
         return "&7" + currentValue + "&8→" + nextValue + "&7";
     }
 
-    private String getUpgradeDuration(MAbility mAbility, PlayerData playerData) {
-        String currentDuration = NumberUtil.format1(getDuration(mAbility, playerData.getManaAbilityLevel(mAbility)));
-        String nextDuration = NumberUtil.format1(getDuration(mAbility, playerData.getManaAbilityLevel(mAbility) + 1));
+    private String getUpgradeDuration(MAbility mAbility, PluginPlayer pluginPlayer) {
+        String currentDuration = NumberUtil.format1(getDuration(mAbility, pluginPlayer.getManaAbilityLevel(mAbility)));
+        String nextDuration = NumberUtil.format1(getDuration(mAbility, pluginPlayer.getManaAbilityLevel(mAbility) + 1));
         return "&7" + currentDuration + "&8→" + nextDuration + "&7";
     }
 
-    private boolean isNotMaxed(PlayerData playerData, MAbility mAbility) {
+    private boolean isNotMaxed(PluginPlayer pluginPlayer, MAbility mAbility) {
         int maxLevel = manager.getMaxLevel(mAbility);
         int unlock = manager.getUnlock(mAbility);
         int levelUp = manager.getLevelUp(mAbility);
@@ -93,18 +93,18 @@ public class UnlockedManaAbilityItem extends AbstractManaAbilityItem implements 
         if (maxLevel == 0 || maxLevel > maxAllowedBySkill) {
             maxLevel = maxAllowedBySkill;
         }
-        return playerData.getManaAbilityLevel(mAbility) < maxLevel;
+        return pluginPlayer.getManaAbilityLevel(mAbility) < maxLevel;
     }
 
     @Override
     public Set<MAbility> getDefinedContexts(Player player, ActiveMenu activeMenu) {
         Skill skill = (Skill) activeMenu.getProperty("skill");
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
         Set<MAbility> unlockedManaAbilities = new HashSet<>();
-        if (playerData != null) {
+        if (pluginPlayer != null) {
             // Add abilities that player has not unlocked yet
             MAbility mAbility = skill.getManaAbility();
-            if (mAbility != null && playerData.getManaAbilityLevel(mAbility) >= 1) {
+            if (mAbility != null && pluginPlayer.getManaAbilityLevel(mAbility) >= 1) {
                 unlockedManaAbilities.add(mAbility);
             }
         }

@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.rewards;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.LevelerMessage;
 import com.archyx.aureliumskills.lang.MenuMessage;
@@ -27,10 +27,10 @@ public class StatReward extends Reward {
 
     @Override
     public void giveReward(Player player, Skill skill, int level) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
 
-        playerData.addStatLevel(stat, value);
+        pluginPlayer.addStatLevel(stat, value);
         new StatLeveler(plugin).reloadStat(player, stat);
     }
 

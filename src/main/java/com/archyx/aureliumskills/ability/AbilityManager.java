@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
 import com.archyx.aureliumskills.configuration.OptionValue;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.mana.MAbility;
 import com.archyx.aureliumskills.mana.ManaAbilityOption;
 import com.archyx.aureliumskills.skills.Skill;
@@ -281,8 +281,8 @@ public class AbilityManager {
         return true;
     }
 
-    public boolean isPlayerEnabled(AbstractAbility ability, PlayerData playerData) {
-        return !playerData.getAbilityData(ability).getBoolean("disabled");
+    public boolean isPlayerEnabled(AbstractAbility ability, PluginPlayer pluginPlayer) {
+        return !pluginPlayer.getAbilityData(ability).getBoolean("disabled");
     }
 
     public boolean isEnabled(MAbility mAbility) {
@@ -420,9 +420,9 @@ public class AbilityManager {
         if (OptionL.getBoolean(Option.ACTION_BAR_ABILITY) && OptionL.getBoolean(Option.ACTION_BAR_ENABLED)) {
             plugin.getActionBar().sendAbilityActionBar(player, message);
         } else {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
-            player.sendMessage(AureliumSkills.getPrefix(playerData.getLocale()) + message);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
+            player.sendMessage(AureliumSkills.getPrefix(pluginPlayer.getLocale()) + message);
         }
     }
 

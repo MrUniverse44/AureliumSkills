@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.modifier;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.requirement.Requirements;
 import com.archyx.aureliumskills.stats.Stat;
 import com.archyx.aureliumskills.stats.StatLeveler;
@@ -24,49 +24,49 @@ public class ModifierManager {
     }
 
     public void reloadPlayer(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
         Requirements requirements = new Requirements(plugin);
         Modifiers modifiers = new Modifiers(plugin);
         Multipliers multipliers = new Multipliers(plugin);
-        if (playerData != null) {
+        if (pluginPlayer != null) {
             Set<Stat> statsToReload = new HashSet<>();
             ItemStack item = player.getInventory().getItemInMainHand();
             if (!(item.getType() == Material.AIR)) {
                 for (StatModifier modifier : modifiers.getModifiers(ModifierType.ITEM, item)) {
-                    playerData.removeStatModifier(modifier.getName());
+                    pluginPlayer.removeStatModifier(modifier.getName());
                     statsToReload.add(modifier.getStat());
                 }
                 for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ITEM, item)) {
-                    playerData.removeMultiplier(multiplier.getName());
+                    pluginPlayer.removeMultiplier(multiplier.getName());
                 }
                 if (requirements.meetsRequirements(ModifierType.ITEM, item, player)) {
                     for (StatModifier modifier : modifiers.getModifiers(ModifierType.ITEM, item)) {
-                        playerData.addStatModifier(modifier, false);
+                        pluginPlayer.addStatModifier(modifier, false);
                         statsToReload.add(modifier.getStat());
                     }
                     for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ITEM, item)) {
-                        playerData.addMultiplier(multiplier);
+                        pluginPlayer.addMultiplier(multiplier);
                     }
                 }
             }
             ItemStack itemOffHand = player.getInventory().getItemInOffHand();
             if (!(itemOffHand.getType() == Material.AIR)) {
                 for (StatModifier modifier : modifiers.getModifiers(ModifierType.ITEM, itemOffHand)) {
-                    playerData.removeStatModifier(modifier.getName() + ".Offhand");
+                    pluginPlayer.removeStatModifier(modifier.getName() + ".Offhand");
                     statsToReload.add(modifier.getStat());
                 }
                 for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ITEM, itemOffHand)) {
-                    playerData.removeMultiplier(multiplier.getName() + ".Offhand");
+                    pluginPlayer.removeMultiplier(multiplier.getName() + ".Offhand");
                 }
                 if (requirements.meetsRequirements(ModifierType.ITEM, itemOffHand, player)) {
                     for (StatModifier modifier : modifiers.getModifiers(ModifierType.ITEM, itemOffHand)) {
                         StatModifier offHandModifier = new StatModifier(modifier.getName() + ".Offhand", modifier.getStat(), modifier.getValue());
-                        playerData.addStatModifier(offHandModifier, false);
+                        pluginPlayer.addStatModifier(offHandModifier, false);
                         statsToReload.add(modifier.getStat());
                     }
                     for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ITEM, itemOffHand)) {
                         Multiplier offHandMultiplier = new Multiplier(multiplier.getName() + ".Offhand", multiplier.getSkill(), multiplier.getValue());
-                        playerData.addMultiplier(offHandMultiplier);
+                        pluginPlayer.addMultiplier(offHandMultiplier);
                     }
                 }
             }
@@ -76,19 +76,19 @@ public class ModifierManager {
                     if (armor != null) {
                         if (!(armor.getType() == Material.AIR)) {
                             for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, armor)) {
-                                playerData.removeStatModifier(modifier.getName());
+                                pluginPlayer.removeStatModifier(modifier.getName());
                                 statsToReload.add(modifier.getStat());
                             }
                             for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, armor)) {
-                                playerData.removeMultiplier(multiplier.getName());
+                                pluginPlayer.removeMultiplier(multiplier.getName());
                             }
                             if (requirements.meetsRequirements(ModifierType.ARMOR, armor, player)) {
                                 for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, armor)) {
-                                    playerData.addStatModifier(modifier, false);
+                                    pluginPlayer.addStatModifier(modifier, false);
                                     statsToReload.add(modifier.getStat());
                                 }
                                 for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, armor)) {
-                                    playerData.addMultiplier(multiplier);
+                                    pluginPlayer.addMultiplier(multiplier);
                                 }
                             }
                         }

@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.rewards;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.LevelerMessage;
 import com.archyx.aureliumskills.skills.Skill;
@@ -39,13 +39,13 @@ public class ItemReward extends MessagedReward {
         ItemStack leftoverItem = ItemUtils.addItemToInventory(player, item); // Attempt item give
         // Handle items that could not fit in the inventory
         if (leftoverItem != null) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
             // Add unclaimed item key and amount to player data
-            playerData.getUnclaimedItems().add(new KeyIntPair(itemKey, leftoverItem.getAmount()));
+            pluginPlayer.getUnclaimedItems().add(new KeyIntPair(itemKey, leftoverItem.getAmount()));
             // Notify player
             plugin.getServer().getScheduler().runTaskLater(plugin, () ->
-                    player.sendMessage(AureliumSkills.getPrefix(playerData.getLocale()) + Lang.getMessage(LevelerMessage.UNCLAIMED_ITEM, playerData.getLocale())), 1);
+                    player.sendMessage(AureliumSkills.getPrefix(pluginPlayer.getLocale()) + Lang.getMessage(LevelerMessage.UNCLAIMED_ITEM, pluginPlayer.getLocale())), 1);
         }
     }
 

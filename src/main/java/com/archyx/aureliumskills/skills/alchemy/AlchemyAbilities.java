@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.AbilityMessage;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.modifier.StatModifier;
@@ -68,10 +68,10 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
                     BrewerInventory inventory = event.getContents();
                     if (player != null) {
                         if (blockAbility(player)) return;
-                        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                        if (playerData == null) return;
-                        if (playerData.getAbilityLevel(Ability.ALCHEMIST) > 0) {
-                            updateBrewingStand(inventory, playerData, playerData.getLocale());
+                        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                        if (pluginPlayer == null) return;
+                        if (pluginPlayer.getAbilityLevel(Ability.ALCHEMIST) > 0) {
+                            updateBrewingStand(inventory, pluginPlayer, pluginPlayer.getLocale());
                         }
                     }
                 }
@@ -79,12 +79,12 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
         }
     }
 
-    private void updateBrewingStand(BrewerInventory inventory, PlayerData playerData, Locale locale) {
+    private void updateBrewingStand(BrewerInventory inventory, PluginPlayer pluginPlayer, Locale locale) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 ItemStack[] contents = inventory.getContents();
-                double multiplier = 1 + (getValue(Ability.ALCHEMIST, playerData) / 100);
+                double multiplier = 1 + (getValue(Ability.ALCHEMIST, pluginPlayer) / 100);
                 for (int i = 0; i < contents.length; i++) {
                     ItemStack item = contents[i];
                     if (item != null) {
@@ -262,10 +262,10 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
         double splasherMultiplier = 1.0;
         if (source instanceof Player) {
             Player player = (Player) source;
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null && plugin.getAbilityManager().isEnabled(Ability.SPLASHER)) {
-                if (playerData.getAbilityLevel(Ability.SPLASHER) > 0) {
-                    double splasherPercent = getValue(Ability.SPLASHER, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null && plugin.getAbilityManager().isEnabled(Ability.SPLASHER)) {
+                if (pluginPlayer.getAbilityLevel(Ability.SPLASHER) > 0) {
+                    double splasherPercent = getValue(Ability.SPLASHER, pluginPlayer);
                     int affectedPlayers = (int) affectedEntities.stream().filter(entity -> entity instanceof Player).filter(entity -> plugin.getPlayerManager().getPlayerData(entity.getUniqueId()) != null).count();
                     splasherMultiplier = 1 + (splasherPercent / 100 * affectedPlayers);
                 }
@@ -298,14 +298,14 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
         }
         if (player != null) {
             if (blockAbility(player)) return;
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
-            if (playerData.getAbilityLevel(Ability.LINGERING) > 0) {
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
+            if (pluginPlayer.getAbilityLevel(Ability.LINGERING) > 0) {
                 AreaEffectCloud cloud = event.getAreaEffectCloud();
                 if (cloud.hasCustomEffects() && OptionL.getBoolean(Option.ALCHEMY_IGNORE_CUSTOM_POTIONS)) return;
                 // Get values
-                double naturalDecay = 1 - (getValue(Ability.LINGERING, playerData) / 100);
-                double entityDecay = 1 - (getValue2(Ability.LINGERING, playerData) / 100);
+                double naturalDecay = 1 - (getValue(Ability.LINGERING, pluginPlayer) / 100);
+                double entityDecay = 1 - (getValue2(Ability.LINGERING, pluginPlayer) / 100);
                 // 1% limit
                 if (naturalDecay <= 0.01) naturalDecay = 0.01;
                 if (entityDecay <= 0.01) entityDecay = 0.01;
@@ -322,10 +322,10 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
             public void run() {
                 if (!blockDisabled(Ability.WISE_EFFECT)) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                        if (playerData != null) {
+                        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                        if (pluginPlayer != null) {
                             if (player.getActivePotionEffects().size() > 0) {
-                                if (playerData.getAbilityLevel(Ability.WISE_EFFECT) <= 0) {
+                                if (pluginPlayer.getAbilityLevel(Ability.WISE_EFFECT) <= 0) {
                                     continue;
                                 }
                                 // Get unique active potion effects
@@ -336,15 +336,15 @@ public class AlchemyAbilities extends AbilityProvider implements Listener {
                                     }
                                     int uniqueTypes = uniqueTypesSet.size();
                                     // Apply modifier
-                                    double wisdomPerType = getValue(Ability.WISE_EFFECT, playerData);
+                                    double wisdomPerType = getValue(Ability.WISE_EFFECT, pluginPlayer);
                                     double modifierValue = wisdomPerType * uniqueTypes;
                                     if (modifierValue > 0.0) {
                                         StatModifier modifier = new StatModifier("AbilityModifier-WiseEffect", Stats.WISDOM, modifierValue);
-                                        playerData.addStatModifier(modifier, false);
+                                        pluginPlayer.addStatModifier(modifier, false);
                                     }
                                 }
                             } else {
-                                playerData.removeStatModifier("AbilityModifier-WiseEffect", false);
+                                pluginPlayer.removeStatModifier("AbilityModifier-WiseEffect", false);
                             }
                         }
                     }

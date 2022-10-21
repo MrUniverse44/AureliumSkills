@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.CustomRegenEvent;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -36,9 +36,9 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
                 if (blockAbility(player)) return;
                 // Checks if food level would be decreased
                 if (player.getFoodLevel() > event.getFoodLevel()) {
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData == null) return;
-                    double chance = getValue(Ability.ANTI_HUNGER, playerData) / 100;
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer == null) return;
+                    double chance = getValue(Ability.ANTI_HUNGER, pluginPlayer) / 100;
                     if (r.nextDouble() < chance) {
                         event.setFoodLevel(player.getFoodLevel());
                     }
@@ -54,13 +54,13 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
                 if (event.getEntity() instanceof Player) {
                     Player player = (Player) event.getEntity();
                     if (blockAbility(player)) return;
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData == null) return;
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer == null) return;
                     // Golden Heal
                     if (event.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.MAGIC_REGEN)) {
                         if (isEnabled(Ability.GOLDEN_HEAL)) {
                             //Applies modifier
-                            double modifier = getValue(Ability.GOLDEN_HEAL, playerData) / 100;
+                            double modifier = getValue(Ability.GOLDEN_HEAL, pluginPlayer) / 100;
                             event.setAmount(event.getAmount() * (1 + modifier));
                         }
                     }
@@ -75,7 +75,7 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
                                 //Checks if health is less than half of max
                                 if (currentHealth < (maxHealth / 2)) {
                                     //Applies modifier
-                                    double modifier = getValue(Ability.RECOVERY, playerData) / 100;
+                                    double modifier = getValue(Ability.RECOVERY, pluginPlayer) / 100;
                                     event.setAmount(event.getAmount() * (1 + modifier));
                                 }
                             }
@@ -91,8 +91,8 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
         if (!event.isCancelled()) {
             if (isEnabled(Ability.RECOVERY)) {
                 Player player = event.getPlayer();
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData == null) return;
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer == null) return;
                 // Gets health
                 AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                 if (attribute != null) {
@@ -101,7 +101,7 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
                     // Checks if health is less than half of max
                     if (currentHealth < (maxHealth / 2)) {
                         // Applies modifier
-                        double modifier = getValue(Ability.RECOVERY, playerData) / 100;
+                        double modifier = getValue(Ability.RECOVERY, pluginPlayer) / 100;
                         event.setAmount(event.getAmount() * (1 + modifier));
                     }
                 }
@@ -118,10 +118,10 @@ public class EnduranceAbilities extends AbilityProvider implements Listener {
                 Player player = (Player) event.getDamager();
                 Player enemy = (Player) event.getEntity();
                 if (blockAbility(player)) return;
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData == null) return;
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer == null) return;
                 // Calculates chance
-                double chance = getValue(Ability.MEAL_STEAL, playerData) / 100;
+                double chance = getValue(Ability.MEAL_STEAL, pluginPlayer) / 100;
                 if (r.nextDouble() < chance) {
                     // Removes food from enemy
                     if (enemy.getFoodLevel() >= 1) {

@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.mana;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.particles.ParticleDisplay;
@@ -21,8 +21,8 @@ public class Absorption extends ReadiedManaAbility {
     }
 
     @Override
-    public void onActivate(Player player, PlayerData playerData) {
-        playerData.getAbilityData(MAbility.ABSORPTION).setData("activated", true); // Register as absorption activated
+    public void onActivate(Player player, PluginPlayer pluginPlayer) {
+        pluginPlayer.getAbilityData(MAbility.ABSORPTION).setData("activated", true); // Register as absorption activated
         // Play sound
         if (XMaterial.isNewVersion()) {
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1, 1);
@@ -32,13 +32,13 @@ public class Absorption extends ReadiedManaAbility {
     }
 
     @Override
-    public void onStop(Player player, PlayerData playerData) {
-        playerData.getAbilityData(MAbility.ABSORPTION).setData("activated", false);
+    public void onStop(Player player, PluginPlayer pluginPlayer) {
+        pluginPlayer.getAbilityData(MAbility.ABSORPTION).setData("activated", false);
     }
 
-    public void handleAbsorption(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
-        if (playerData.getAbilityData(MAbility.ABSORPTION).getBoolean("activated") && isActivated(player)) {
-            handleAbsorbedHit(event, player, playerData);
+    public void handleAbsorption(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
+        if (pluginPlayer.getAbilityData(MAbility.ABSORPTION).getBoolean("activated") && isActivated(player)) {
+            handleAbsorbedHit(event, player, pluginPlayer);
         } else if (isReady(player)) {
             // Activate ability if ready
             if (isActivated(player)) {
@@ -46,16 +46,16 @@ public class Absorption extends ReadiedManaAbility {
             }
             if (hasEnoughMana(player)) {
                 activate(player);
-                handleAbsorbedHit(event, player, playerData);
+                handleAbsorbedHit(event, player, pluginPlayer);
             }
         }
     }
 
-    private void handleAbsorbedHit(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+    private void handleAbsorbedHit(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
         // Decrease mana and cancel event
-        double mana = playerData.getMana() - event.getDamage() * 2;
+        double mana = pluginPlayer.getMana() - event.getDamage() * 2;
         if (mana > 0) {
-            playerData.setMana(mana);
+            pluginPlayer.setMana(mana);
             event.setCancelled(true);
             // Particle effects and sound
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_HURT, 1f, 1f);

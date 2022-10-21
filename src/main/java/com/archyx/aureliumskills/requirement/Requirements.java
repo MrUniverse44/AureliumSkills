@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.requirement;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.modifier.ModifierType;
@@ -169,16 +169,16 @@ public class Requirements extends NBTAPIUser {
 
     public boolean meetsRequirements(ModifierType type, ItemStack item, Player player) {
         if (!OptionL.getBoolean(Option.REQUIREMENT_ENABLED)) return true;
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return true;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return true;
         // Check global requirements
         for (Map.Entry<Skill, Integer> entry : getGlobalRequirements(type, item).entrySet()) {
-            if (playerData.getSkillLevel(entry.getKey()) < entry.getValue()) {
+            if (pluginPlayer.getSkillLevel(entry.getKey()) < entry.getValue()) {
                 return false;
             }
         }
         for (Map.Entry<Skill, Integer> entry : getRequirements(type, item).entrySet()) {
-            if (playerData.getSkillLevel(entry.getKey()) < entry.getValue()) {
+            if (pluginPlayer.getSkillLevel(entry.getKey()) < entry.getValue()) {
                 return false;
             }
         }

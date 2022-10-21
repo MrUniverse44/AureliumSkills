@@ -6,7 +6,7 @@ import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.modifier.StatModifier;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.stats.Stats;
@@ -39,10 +39,10 @@ public class ForagingAbilities extends AbilityProvider implements Listener {
 		if (OptionL.isEnabled(Skills.FORAGING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.LUMBERJACK)) {
 				if (player.getGameMode().equals(GameMode.SURVIVAL)) {
-					PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-					if (playerData == null) return;
-					if (playerData.getAbilityLevel(Ability.LUMBERJACK) > 0) {
-						if (r.nextDouble() < ((getValue(Ability.LUMBERJACK, playerData)) / 100)) {
+					PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+					if (pluginPlayer == null) return;
+					if (pluginPlayer.getAbilityLevel(Ability.LUMBERJACK) > 0) {
+						if (r.nextDouble() < ((getValue(Ability.LUMBERJACK, pluginPlayer)) / 100)) {
 							for (ItemStack item : block.getDrops(player.getInventory().getItemInMainHand())) {
 								PlayerLootDropEvent event = new PlayerLootDropEvent(player, item.clone(), block.getLocation().add(0.5, 0.5, 0.5), LootDropCause.LUMBERJACK);
 								Bukkit.getPluginManager().callEvent(event);
@@ -57,15 +57,15 @@ public class ForagingAbilities extends AbilityProvider implements Listener {
 		}
 	}
 
-	public void axeMaster(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+	public void axeMaster(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
 		if (OptionL.isEnabled(Skills.FORAGING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.AXE_MASTER)) {
 				//Check permission
 				if (!player.hasPermission("aureliumskills.foraging")) {
 					return;
 				}
-				if (playerData.getAbilityLevel(Ability.AXE_MASTER) > 0) {
-					event.setDamage(event.getDamage() * (1 + (getValue(Ability.AXE_MASTER, playerData) / 100)));
+				if (pluginPlayer.getAbilityLevel(Ability.AXE_MASTER) > 0) {
+					event.setDamage(event.getDamage() * (1 + (getValue(Ability.AXE_MASTER, pluginPlayer) / 100)));
 				}
 			}
 		}
@@ -90,11 +90,11 @@ public class ForagingAbilities extends AbilityProvider implements Listener {
 							Material mat = player.getInventory().getItemInMainHand().getType();
 							if (mat.equals(Material.DIAMOND_AXE) || mat.equals(Material.IRON_AXE) || mat.equals(XMaterial.GOLDEN_AXE.parseMaterial())
 									|| mat.equals(Material.STONE_AXE) || mat.equals(XMaterial.WOODEN_AXE.parseMaterial())) {
-								PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-								if (playerData == null) return;
+								PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+								if (pluginPlayer == null) return;
 								//Checks if shredder is used
-								if (playerData.getAbilityLevel(Ability.SHREDDER) > 0) {
-									if (r.nextDouble() < (getValue(Ability.SHREDDER, playerData)) / 100) {
+								if (pluginPlayer.getAbilityLevel(Ability.SHREDDER) > 0) {
+									if (r.nextDouble() < (getValue(Ability.SHREDDER, pluginPlayer)) / 100) {
 										event.setDamage(event.getDamage() * 3);
 									}
 								}
@@ -106,17 +106,17 @@ public class ForagingAbilities extends AbilityProvider implements Listener {
 		}
 	}
 
-	public void applyValor(PlayerData playerData) {
+	public void applyValor(PluginPlayer pluginPlayer) {
 		if (OptionL.isEnabled(Skills.FORAGING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.VALOR)) {
-				if (playerData.getAbilityLevel(Ability.VALOR) > 0) {
-					playerData.addStatModifier(new StatModifier("foraging-valor", Stats.STRENGTH, (int) getValue(Ability.VALOR, playerData)));
+				if (pluginPlayer.getAbilityLevel(Ability.VALOR) > 0) {
+					pluginPlayer.addStatModifier(new StatModifier("foraging-valor", Stats.STRENGTH, (int) getValue(Ability.VALOR, pluginPlayer)));
 				}
 			}
 		}
 	}
 
-	public void removeValor(PlayerData playerData) {
-		playerData.removeStatModifier("foraging-valor");
+	public void removeValor(PluginPlayer pluginPlayer) {
+		pluginPlayer.removeStatModifier("foraging-valor");
 	}
 }

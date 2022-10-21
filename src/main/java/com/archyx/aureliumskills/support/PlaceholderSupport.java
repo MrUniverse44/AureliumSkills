@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.support;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.leaderboard.SkillValue;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.stats.Stat;
@@ -62,9 +62,9 @@ public class PlaceholderSupport extends PlaceholderExpansion {
 
         //Gets total combined skill level
         if (identifier.equals("power")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                return String.valueOf(playerData.getPowerLevel());
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                return String.valueOf(pluginPlayer.getPowerLevel());
             }
         }
 
@@ -107,47 +107,47 @@ public class PlaceholderSupport extends PlaceholderExpansion {
 
         //Gets mana
         if (identifier.equals("mana")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                return String.valueOf(playerData.getMana());
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                return String.valueOf(pluginPlayer.getMana());
             }
         }
 
         // Gets mana rounded to an integer
         if (identifier.equals("mana_int")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                return String.valueOf(Math.round(playerData.getMana()));
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                return String.valueOf(Math.round(pluginPlayer.getMana()));
             }
         }
 
         // Gets max mana
         if (identifier.equals("mana_max")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                return String.valueOf(playerData.getMaxMana());
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                return String.valueOf(pluginPlayer.getMaxMana());
             }
         }
 
         // Gets max mana rounded to an integer
         if (identifier.equals("mana_max_int")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                return String.valueOf(Math.round(playerData.getMaxMana()));
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                return String.valueOf(Math.round(pluginPlayer.getMaxMana()));
             }
         }
 
         //Gets stat values
         for (Stat stat : plugin.getStatRegistry().getStats()) {
             if (identifier.equals(stat.name().toLowerCase(Locale.ENGLISH))) {
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    return String.valueOf(playerData.getStatLevel(stat));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    return String.valueOf(pluginPlayer.getStatLevel(stat));
                 }
             } else if (identifier.equals(stat.name().toLowerCase(Locale.ROOT) + "_int")) {
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    return String.valueOf(Math.round(playerData.getStatLevel(stat)));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    return String.valueOf(Math.round(pluginPlayer.getStatLevel(stat)));
                 }
             }
         }
@@ -155,15 +155,15 @@ public class PlaceholderSupport extends PlaceholderExpansion {
         //Gets skill levels
         for (Skill skill : plugin.getSkillRegistry().getSkills()) {
             if (identifier.equals(skill.name().toLowerCase(Locale.ENGLISH))) {
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    return String.valueOf(playerData.getSkillLevel(skill));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    return String.valueOf(pluginPlayer.getSkillLevel(skill));
                 }
             }
             else if (identifier.equals(skill.name().toLowerCase(Locale.ENGLISH) + "_roman")) {
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    return RomanNumber.toRoman(playerData.getSkillLevel(skill));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    return RomanNumber.toRoman(pluginPlayer.getSkillLevel(skill));
                 }
             }
         }
@@ -268,25 +268,25 @@ public class PlaceholderSupport extends PlaceholderExpansion {
 
                 Skill skill = plugin.getSkillRegistry().getSkill(skillName);
                 if (skill != null) {
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData != null) {
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer != null) {
                         switch (id) {
                             case "xp_required_formatted_":
-                                return BigNumber.withSuffix(plugin.getLeveler().getXpRequirements().getXpRequired(skill, playerData.getSkillLevel(skill) + 1));
+                                return BigNumber.withSuffix(plugin.getLeveler().getXpRequirements().getXpRequired(skill, pluginPlayer.getSkillLevel(skill) + 1));
                             case "xp_required_":
-                                return String.valueOf(plugin.getLeveler().getXpRequirements().getXpRequired(skill, playerData.getSkillLevel(skill) + 1));
+                                return String.valueOf(plugin.getLeveler().getXpRequirements().getXpRequired(skill, pluginPlayer.getSkillLevel(skill) + 1));
                             case "xp_progress_int_":
-                                return String.valueOf(Math.round(playerData.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, playerData.getSkillLevel(skill) + 1)) * 100));
+                                return String.valueOf(Math.round(pluginPlayer.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, pluginPlayer.getSkillLevel(skill) + 1)) * 100));
                             case "xp_progress_1_":
-                                return NumberUtil.format1(playerData.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, playerData.getSkillLevel(skill) + 1)) * 100);
+                                return NumberUtil.format1(pluginPlayer.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, pluginPlayer.getSkillLevel(skill) + 1)) * 100);
                             case "xp_progress_":
-                                return String.valueOf(playerData.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, playerData.getSkillLevel(skill) + 1)) * 100);
+                                return String.valueOf(pluginPlayer.getSkillXp(skill) / (double) (plugin.getLeveler().getXpRequirements().getXpRequired(skill, pluginPlayer.getSkillLevel(skill) + 1)) * 100);
                             case "xp_int_":
-                                return String.valueOf(Math.round(playerData.getSkillXp(skill)));
+                                return String.valueOf(Math.round(pluginPlayer.getSkillXp(skill)));
                             case "xp_formatted_":
-                                return BigNumber.withSuffix(Math.round(playerData.getSkillXp(skill)));
+                                return BigNumber.withSuffix(Math.round(pluginPlayer.getSkillXp(skill)));
                             case "xp_":
-                                return String.valueOf(playerData.getSkillXp(skill));
+                                return String.valueOf(pluginPlayer.getSkillXp(skill));
                         }
                     }
                 }

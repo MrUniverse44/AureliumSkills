@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.menus.levelprogression;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.skills.Skill;
@@ -26,8 +26,8 @@ public class InProgressItem extends SkillLevelItem {
     public String onPlaceholderReplace(String placeholder, Player player, ActiveMenu activeMenu, PlaceholderData data, Integer position) {
         Locale locale = plugin.getLang().getLocale(player);
         Skill skill = (Skill) activeMenu.getProperty("skill");
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return placeholder;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return placeholder;
         int level = getLevel(activeMenu, position);
         switch (placeholder) {
             case "level_in_progress":
@@ -41,7 +41,7 @@ public class InProgressItem extends SkillLevelItem {
             case "mana_ability":
                 return getManaAbilityLore(skill, level, locale);
             case "progress":
-                double currentXp = playerData.getSkillXp(skill);
+                double currentXp = pluginPlayer.getSkillXp(skill);
                 double xpToNext = plugin.getLeveler().getXpRequirements().getXpRequired(skill, level);
                 return TextUtil.replace(Lang.getMessage(MenuMessage.PROGRESS, locale)
                         ,"{percent}", NumberUtil.format2(currentXp / xpToNext * 100)
@@ -55,12 +55,12 @@ public class InProgressItem extends SkillLevelItem {
 
     @Override
     public Set<Integer> getDefinedContexts(Player player, ActiveMenu activeMenu) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
         Skill skill = (Skill) activeMenu.getProperty("skill");
         int itemsPerPage = getItemsPerPage(activeMenu);
         int currentPage = activeMenu.getCurrentPage();
-        if (playerData != null) {
-            int level = playerData.getSkillLevel(skill);
+        if (pluginPlayer != null) {
+            int level = pluginPlayer.getSkillLevel(skill);
             if (level >= 1 + currentPage * itemsPerPage && level < (currentPage + 1) * itemsPerPage + 2) {
                 Set<Integer> levels = new HashSet<>();
                 int position = (level + 1) % itemsPerPage; // Calculate the first-page equivalent next level

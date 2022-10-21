@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.menus.common;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.menus.levelprogression.LevelProgressionOpener;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.slate.menu.ActiveMenu;
@@ -19,9 +19,9 @@ public class BackToLevelProgressionItem extends BackItem {
     @Override
     public void onClick(Player player, InventoryClickEvent event, ItemStack item, SlotPos pos, ActiveMenu activeMenu) {
         Skill skill = (Skill) activeMenu.getProperty("skill");
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            new LevelProgressionOpener(plugin).open(player, playerData, skill);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            new LevelProgressionOpener(plugin).open(player, pluginPlayer, skill);
         }
     }
 

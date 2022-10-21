@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.mana;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.skills.Skills;
 import com.cryptomorin.xseries.XMaterial;
@@ -42,8 +42,8 @@ public class LightningBlade extends ReadiedManaAbility {
         }
         // Checks if ready
         if (isReady(player)) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
             if (hasEnoughMana(player)) {
                 activate(player);
             }
@@ -51,15 +51,15 @@ public class LightningBlade extends ReadiedManaAbility {
     }
 
     @Override
-    protected int getDuration(PlayerData playerData) {
+    protected int getDuration(PluginPlayer pluginPlayer) {
         double baseDuration = manager.getOptionAsDouble(mAbility, "base_duration");
         double durationPerLevel = manager.getOptionAsDouble(mAbility, "duration_per_level");
-        double durationSeconds = baseDuration + (durationPerLevel * (playerData.getManaAbilityLevel(mAbility) - 1));
+        double durationSeconds = baseDuration + (durationPerLevel * (pluginPlayer.getManaAbilityLevel(mAbility) - 1));
         return (int) Math.round(durationSeconds * 20);
     }
 
     @Override
-    public void onActivate(Player player, PlayerData playerData) {
+    public void onActivate(Player player, PluginPlayer pluginPlayer) {
         AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         if (attribute == null) return;
 
@@ -71,7 +71,7 @@ public class LightningBlade extends ReadiedManaAbility {
         }
         // Increase attack speed attribute
         double currentValue = attribute.getValue();
-        double addedValue = plugin.getManaAbilityManager().getValue(MAbility.LIGHTNING_BLADE, playerData) / 100 * currentValue;
+        double addedValue = plugin.getManaAbilityManager().getValue(MAbility.LIGHTNING_BLADE, pluginPlayer) / 100 * currentValue;
         attribute.addModifier(new AttributeModifier("AureliumSkills-LightningBlade", addedValue, AttributeModifier.Operation.ADD_NUMBER));
         // Play sound and send message
         if (XMaterial.isNewVersion()) {
@@ -82,7 +82,7 @@ public class LightningBlade extends ReadiedManaAbility {
     }
 
     @Override
-    public void onStop(Player player, PlayerData playerData) {
+    public void onStop(Player player, PluginPlayer pluginPlayer) {
         AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         if (attribute == null) return;
         // Remove modifier if exists

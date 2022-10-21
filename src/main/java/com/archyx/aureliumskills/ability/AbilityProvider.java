@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.ability;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.mana.MAbility;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.source.Source;
@@ -53,13 +53,13 @@ public abstract class AbilityProvider {
     }
 
     public double getXp(Player player, Source source, Ability ability) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             double output = plugin.getSourceManager().getXp(source);
             if (ability != null) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
                     double modifier = 1;
-                    modifier += plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability)) / 100;
+                    modifier += plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability)) / 100;
                     output *= modifier;
                 }
             }
@@ -72,20 +72,20 @@ public abstract class AbilityProvider {
         return plugin.getAbilityManager().isEnabled(ability);
     }
 
-    public double getValue(Ability ability, PlayerData playerData) {
-        return plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability));
+    public double getValue(Ability ability, PluginPlayer pluginPlayer) {
+        return plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability));
     }
 
-    public double getValue2(Ability ability, PlayerData playerData) {
-        return plugin.getAbilityManager().getValue2(ability, playerData.getAbilityLevel(ability));
+    public double getValue2(Ability ability, PluginPlayer pluginPlayer) {
+        return plugin.getAbilityManager().getValue2(ability, pluginPlayer.getAbilityLevel(ability));
     }
 
-    public double getValue(MAbility mability, PlayerData playerData) {
-        return plugin.getManaAbilityManager().getValue(mability, playerData.getManaAbilityLevel(mability));
+    public double getValue(MAbility mability, PluginPlayer pluginPlayer) {
+        return plugin.getManaAbilityManager().getValue(mability, pluginPlayer.getManaAbilityLevel(mability));
     }
 
-    public double getManaCost(MAbility mability, PlayerData playerData) {
-        return plugin.getManaAbilityManager().getManaCost(mability, playerData);
+    public double getManaCost(MAbility mability, PluginPlayer pluginPlayer) {
+        return plugin.getManaAbilityManager().getManaCost(mability, pluginPlayer);
     }
 
     public boolean hasTag(Source source, SourceTag tag) {

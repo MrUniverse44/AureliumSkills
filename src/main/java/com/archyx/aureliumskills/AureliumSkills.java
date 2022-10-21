@@ -7,7 +7,7 @@ import com.archyx.aureliumskills.api.AureliumAPI;
 import com.archyx.aureliumskills.commands.*;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerManager;
 import com.archyx.aureliumskills.data.backup.BackupProvider;
 import com.archyx.aureliumskills.data.backup.LegacyFileBackup;
@@ -344,8 +344,8 @@ public class AureliumSkills extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		for (PlayerData playerData : playerManager.getPlayerDataMap().values()) {
-			storageProvider.save(playerData.getBukkitPlayer(), false);
+		for (PluginPlayer pluginPlayer : playerManager.getPlayerDataMap().values()) {
+			storageProvider.save(pluginPlayer.getBukkitPlayer(), false);
 		}
 		playerManager.getPlayerDataMap().clear();
 		File file = new File(this.getDataFolder(), "config.yml");
@@ -500,9 +500,9 @@ public class AureliumSkills extends JavaPlugin {
 		commandManager.getCommandCompletions().registerAsyncCompletion("lang", c -> Lang.getDefinedLanguagesSet());
 		commandManager.getCommandCompletions().registerAsyncCompletion("modifiers", c -> {
 			Player player = c.getPlayer();
-			PlayerData playerData = getPlayerManager().getPlayerData(player);
-			if (playerData != null) {
-				return playerData.getStatModifiers().keySet();
+			PluginPlayer pluginPlayer = getPlayerManager().getPlayerData(player);
+			if (pluginPlayer != null) {
+				return pluginPlayer.getStatModifiers().keySet();
 			}
 			return null;
 		});

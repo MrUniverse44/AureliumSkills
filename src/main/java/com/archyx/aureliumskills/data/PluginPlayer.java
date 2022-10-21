@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class PlayerData {
+public class PluginPlayer {
     private final UUID uniqueId;
     private final AureliumSkills plugin;
 
@@ -44,7 +44,7 @@ public class PlayerData {
     // Not persistent data
     private final Map<String, Multiplier> multipliers;
 
-    public PlayerData(Player player, AureliumSkills plugin) {
+    public PluginPlayer(Player player, AureliumSkills plugin) {
         this.plugin = plugin;
         this.uniqueId = player.getUniqueId();
         this.skillLevels = new HashMap<>();

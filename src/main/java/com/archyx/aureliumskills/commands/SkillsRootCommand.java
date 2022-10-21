@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.*;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.item.UnclaimedItemsMenu;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
@@ -249,9 +249,9 @@ public class SkillsRootCommand extends BaseCommand {
 	public void onLanguage(Player player, String language) {
 		Locale locale = new Locale(language.toLowerCase(Locale.ENGLISH));
 		if (Lang.hasLocale(locale)) {
-			PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-			if (playerData == null) return;
-			playerData.setLocale(locale);
+			PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+			if (pluginPlayer == null) return;
+			pluginPlayer.setLocale(locale);
 			plugin.getCommandManager().setPlayerLocale(player, locale);
 			player.sendMessage(AureliumSkills.getPrefix(locale) + Lang.getMessage(CommandMessage.LANG_SET, locale).replace("{lang}", Lang.getDefinedLanguages().get(locale)));
 		}
@@ -392,16 +392,16 @@ public class SkillsRootCommand extends BaseCommand {
 	@Subcommand("claimitems")
 	@CommandPermission("aureliumskills.claimitems")
 	public void onClaimItems(Player player) {
-		PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
+		PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
 		Locale locale = Lang.getDefaultLanguage();
-		if (playerData != null) {
-			locale = playerData.getLocale();
+		if (pluginPlayer != null) {
+			locale = pluginPlayer.getLocale();
 		}
-		if (playerData == null || playerData.getUnclaimedItems().size() == 0) {
+		if (pluginPlayer == null || pluginPlayer.getUnclaimedItems().size() == 0) {
 			player.sendMessage(AureliumSkills.getPrefix(locale) + Lang.getMessage(CommandMessage.CLAIMITEMS_NO_ITEMS, locale));
 			return;
 		}
-		UnclaimedItemsMenu.getInventory(plugin, playerData).open(player);
+		UnclaimedItemsMenu.getInventory(plugin, pluginPlayer).open(player);
 	}
 
 	@Subcommand("version")

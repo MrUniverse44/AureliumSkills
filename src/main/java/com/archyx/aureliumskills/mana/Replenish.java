@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.mana;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.util.block.BlockUtil;
 import com.cryptomorin.xseries.XMaterial;
@@ -25,12 +25,12 @@ public class Replenish extends ReadiedManaAbility {
     }
 
     @Override
-    public void onActivate(Player player, PlayerData playerData) {
+    public void onActivate(Player player, PluginPlayer pluginPlayer) {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
     @Override
-    public void onStop(Player player, PlayerData playerData) {
+    public void onStop(Player player, PluginPlayer pluginPlayer) {
 
     }
 

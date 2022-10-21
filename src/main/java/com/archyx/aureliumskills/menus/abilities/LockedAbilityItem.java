@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.menus.abilities;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.skills.Skill;
@@ -49,13 +49,13 @@ public class LockedAbilityItem extends AbstractAbilityItem {
     @Override
     public Set<Ability> getDefinedContexts(Player player, ActiveMenu activeMenu) {
         Skill skill = (Skill) activeMenu.getProperty("skill");
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
         Set<Ability> lockedAbilities = new HashSet<>();
-        if (playerData != null) {
+        if (pluginPlayer != null) {
             // Add abilities that player has not unlocked yet
             for (Supplier<Ability> abilitySupplier : skill.getAbilities()) {
                 Ability ability = abilitySupplier.get();
-                if (playerData.getAbilityLevel(ability) <= 0) {
+                if (pluginPlayer.getAbilityLevel(ability) <= 0) {
                     lockedAbilities.add(ability);
                 }
             }

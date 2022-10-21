@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
@@ -35,9 +35,9 @@ public class FishingAbilities extends AbilityProvider implements Listener {
 		if (event.isCancelled()) return;
 		if (event.getCaught() instanceof Item) {
 			if (event.getExpToDrop() > 0) {
-				PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-				if (playerData != null) {
-					if (r.nextDouble() < (getValue(Ability.LUCKY_CATCH, playerData) / 100)) {
+				PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+				if (pluginPlayer != null) {
+					if (r.nextDouble() < (getValue(Ability.LUCKY_CATCH, pluginPlayer) / 100)) {
 						Item item = (Item) event.getCaught();
 						ItemStack drop = item.getItemStack();
 						if (drop.getMaxStackSize() > 1) {
@@ -59,12 +59,12 @@ public class FishingAbilities extends AbilityProvider implements Listener {
 		if (blockDisabled(Ability.GRAPPLER)) return;
 		if (event.getCaught() != null) {
 			if (!(event.getCaught() instanceof Item)) {
-				PlayerData playerData = plugin.getPlayerManager().getPlayerData(event.getPlayer());
-				if (playerData != null) {
+				PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(event.getPlayer());
+				if (pluginPlayer != null) {
 					Player player = event.getPlayer();
 					if (blockAbility(player)) return;
 					Vector vector = player.getLocation().toVector().subtract(event.getCaught().getLocation().toVector());
-					Vector result = vector.multiply(0.004 + (getValue(Ability.GRAPPLER, playerData) / 25000));
+					Vector result = vector.multiply(0.004 + (getValue(Ability.GRAPPLER, pluginPlayer) / 25000));
 
 					if (isUnsafeVelocity(result)) { // Prevent excessive velocity warnings
 						return;

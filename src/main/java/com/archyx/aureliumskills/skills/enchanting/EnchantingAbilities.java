@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.XpGainEvent;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.modifier.StatModifier;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.stats.Stats;
@@ -38,16 +38,16 @@ public class EnchantingAbilities extends AbilityProvider implements Listener {
         if (blockDisabled(Ability.XP_CONVERT)) return;
         Player player = event.getPlayer();
         if (blockAbility(player)) return;
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            if (playerData.getAbilityLevel(Ability.XP_CONVERT) > 0 && event.getAmount() > 0) {
-                double totalXp = playerData.getAbilityData(Ability.XP_CONVERT).getDouble("xp") + event.getAmount();
-                double value =  getValue(Ability.XP_CONVERT, playerData);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            if (pluginPlayer.getAbilityLevel(Ability.XP_CONVERT) > 0 && event.getAmount() > 0) {
+                double totalXp = pluginPlayer.getAbilityData(Ability.XP_CONVERT).getDouble("xp") + event.getAmount();
+                double value =  getValue(Ability.XP_CONVERT, pluginPlayer);
                 if (value > 0) {
                     int added = (int) (totalXp / value);
                     double remainder = totalXp - added * value;
                     player.giveExp(added);
-                    playerData.getAbilityData(Ability.XP_CONVERT).setData("xp", remainder);
+                    pluginPlayer.getAbilityData(Ability.XP_CONVERT).setData("xp", remainder);
                 }
             }
         }
@@ -60,10 +60,10 @@ public class EnchantingAbilities extends AbilityProvider implements Listener {
         if (entity.getKiller() != null) {
             Player player = entity.getKiller();
             if (blockAbility(player)) return;
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                if (playerData.getAbilityLevel(Ability.XP_WARRIOR) > 0 && event.getDroppedExp() > 0) {
-                    if (random.nextDouble() < getValue(Ability.XP_WARRIOR, playerData) / 100) {
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                if (pluginPlayer.getAbilityLevel(Ability.XP_WARRIOR) > 0 && event.getDroppedExp() > 0) {
+                    if (random.nextDouble() < getValue(Ability.XP_WARRIOR, pluginPlayer) / 100) {
                         event.setDroppedExp(event.getDroppedExp() * 2);
                     }
                 }
@@ -77,19 +77,19 @@ public class EnchantingAbilities extends AbilityProvider implements Listener {
             public void run() {
                 if (blockDisabled(Ability.ENCHANTED_STRENGTH)) return;
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData != null) {
-                        if (playerData.getAbilityLevel(Ability.ENCHANTED_STRENGTH) > 0) {
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer != null) {
+                        if (pluginPlayer.getAbilityLevel(Ability.ENCHANTED_STRENGTH) > 0) {
                             ItemStack item = player.getInventory().getItemInMainHand();
                             if (item.getEnchantments().size() > 0) {
                                 if (!blockAbility(player)) {
                                     // Apply modifier
-                                    double strengthPerType = getValue(Ability.ENCHANTED_STRENGTH, playerData);
+                                    double strengthPerType = getValue(Ability.ENCHANTED_STRENGTH, pluginPlayer);
                                     StatModifier modifier = new StatModifier("AbilityModifier-EnchantedStrength", Stats.STRENGTH, strengthPerType * item.getEnchantments().size());
-                                    playerData.addStatModifier(modifier, false);
+                                    pluginPlayer.addStatModifier(modifier, false);
                                 }
                             } else {
-                                playerData.removeStatModifier("AbilityModifier-EnchantedStrength");
+                                pluginPlayer.removeStatModifier("AbilityModifier-EnchantedStrength");
                             }
                         }
                     }
@@ -104,12 +104,12 @@ public class EnchantingAbilities extends AbilityProvider implements Listener {
         if (blockDisabled(Ability.LUCKY_TABLE)) return;
         Player player = event.getEnchanter();
         if (blockAbility(player)) return;
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        if (playerData.getAbilityLevel(Ability.LUCKY_TABLE) > 0) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        if (pluginPlayer.getAbilityLevel(Ability.LUCKY_TABLE) > 0) {
             for (Map.Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
                 if (entry.getKey().getMaxLevel() > entry.getValue()) {
-                    if (random.nextDouble() < getValue(Ability.LUCKY_TABLE, playerData) / 100) {
+                    if (random.nextDouble() < getValue(Ability.LUCKY_TABLE, pluginPlayer) / 100) {
                         entry.setValue(entry.getValue() + 1);
                     }
                 }

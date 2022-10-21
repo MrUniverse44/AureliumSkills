@@ -1,6 +1,6 @@
 package com.archyx.aureliumskills.api.event;
 
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -10,22 +10,22 @@ public class ManaRegenerateEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private final PlayerData playerData;
+    private final PluginPlayer pluginPlayer;
     private double amount;
     private boolean isCancelled;
 
-    public ManaRegenerateEvent(PlayerData playerData, double amount) {
-        this.playerData = playerData;
+    public ManaRegenerateEvent(PluginPlayer pluginPlayer, double amount) {
+        this.pluginPlayer = pluginPlayer;
         this.amount = amount;
         this.isCancelled = false;
     }
 
-    public PlayerData getPlayerData() {
-        return playerData;
+    public PluginPlayer getPlayerData() {
+        return pluginPlayer;
     }
 
     public Player getPlayer() {
-        return playerData.getBukkitPlayer();
+        return pluginPlayer.getBukkitPlayer();
     }
 
     public double getAmount() {

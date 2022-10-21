@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.rewards;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.stats.Stat;
 import com.google.common.collect.ImmutableList;
 import org.bukkit.entity.Player;
@@ -80,13 +80,13 @@ public class RewardTable {
         return ImmutableList.copyOf(rewardList);
     }
 
-    public void applyStats(PlayerData playerData, int level) {
+    public void applyStats(PluginPlayer pluginPlayer, int level) {
         Map<Integer, ImmutableList<StatReward>> statRewardMap = searchRewards(StatReward.class);
         for (int i = 2; i <= level; i++) {
             ImmutableList<StatReward> statRewardList = statRewardMap.get(i);
             if (statRewardList != null) {
                 for (StatReward statReward : statRewardList) {
-                    playerData.addStatLevel(statReward.getStat(), statReward.getValue());
+                    pluginPlayer.addStatLevel(statReward.getStat(), statReward.getValue());
                 }
             }
         }

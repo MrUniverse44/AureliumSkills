@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.AbstractAbility;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
 import com.archyx.aureliumskills.data.AbilityData;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.data.PlayerDataState;
 import com.archyx.aureliumskills.lang.CommandMessage;
@@ -43,7 +43,7 @@ public class YamlStorageProvider extends StorageProvider {
         File file = new File(plugin.getDataFolder() + "/playerdata/" + player.getUniqueId() + ".yml");
         if (file.exists()) {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            PlayerData playerData = new PlayerData(player, plugin);
+            PluginPlayer pluginPlayer = new PluginPlayer(player, plugin);
             try {
                 // Make sure file name and uuid match
                 UUID id = UUID.fromString(config.getString("uuid", player.getUniqueId().toString()));
@@ -55,10 +55,10 @@ public class YamlStorageProvider extends StorageProvider {
                     String path = "skills." + skill.name().toLowerCase(Locale.ROOT) + ".";
                     int level = config.getInt(path + "level", 1);
                     double xp = config.getDouble(path + "xp", 0.0);
-                    playerData.setSkillLevel(skill, level);
-                    playerData.setSkillXp(skill, xp);
+                    pluginPlayer.setSkillLevel(skill, level);
+                    pluginPlayer.setSkillXp(skill, xp);
                     // Add stat levels
-                    plugin.getRewardManager().getRewardTable(skill).applyStats(playerData, level);
+                    plugin.getRewardManager().getRewardTable(skill).applyStats(pluginPlayer, level);
                 }
                 // Load stat modifiers
                 ConfigurationSection modifiersSection = config.getConfigurationSection("stat_modifiers");
@@ -72,16 +72,16 @@ public class YamlStorageProvider extends StorageProvider {
                             if (name != null && statName != null) {
                                 Stat stat = plugin.getStatRegistry().getStat(statName);
                                 StatModifier modifier = new StatModifier(name, stat, value);
-                                playerData.addStatModifier(modifier);
+                                pluginPlayer.addStatModifier(modifier);
                             }
                         }
                     }
                 }
-                playerData.setMana(config.getDouble("mana")); // Load mana
+                pluginPlayer.setMana(config.getDouble("mana")); // Load mana
                 // Load locale
                 String locale = config.getString("locale");
                 if (locale != null) {
-                    playerData.setLocale(new Locale(locale));
+                    pluginPlayer.setLocale(new Locale(locale));
                 }
                 // Load ability data
                 ConfigurationSection abilitySection = config.getConfigurationSection("ability_data");
@@ -91,7 +91,7 @@ public class YamlStorageProvider extends StorageProvider {
                         if (abilityEntry != null) {
                             AbstractAbility ability = AbstractAbility.valueOf(abilityName.toUpperCase(Locale.ROOT));
                             if (ability != null) {
-                                AbilityData abilityData = playerData.getAbilityData(ability);
+                                AbilityData abilityData = pluginPlayer.getAbilityData(ability);
                                 for (String key : abilityEntry.getKeys(false)) {
                                     Object value = abilityEntry.get(key);
                                     abilityData.setData(key, value);
@@ -113,12 +113,12 @@ public class YamlStorageProvider extends StorageProvider {
                         }
                         unclaimedItems.add(new KeyIntPair(itemKey, amount));
                     }
-                    playerData.setUnclaimedItems(unclaimedItems);
-                    playerData.clearInvalidItems();
+                    pluginPlayer.setUnclaimedItems(unclaimedItems);
+                    pluginPlayer.clearInvalidItems();
                 }
-                playerManager.addPlayerData(playerData);
+                playerManager.addPlayerData(pluginPlayer);
                 plugin.getLeveler().updatePermissions(player);
-                PlayerDataLoadEvent event = new PlayerDataLoadEvent(playerData);
+                PlayerDataLoadEvent event = new PlayerDataLoadEvent(pluginPlayer);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -128,7 +128,7 @@ public class YamlStorageProvider extends StorageProvider {
             } catch (Exception e) {
                 Bukkit.getLogger().warning("There was an error loading player data for player " + player.getName() + " with UUID " + player.getUniqueId() + ", see below for details.");
                 e.printStackTrace();
-                PlayerData data = createNewPlayer(player);
+                PluginPlayer data = createNewPlayer(player);
                 data.setShouldSave(false);
                 sendErrorMessageToPlayer(player, e);
             }
@@ -184,16 +184,16 @@ public class YamlStorageProvider extends StorageProvider {
 
     @Override
     public void save(Player player, boolean removeFromMemory) {
-        PlayerData playerData = playerManager.getPlayerData(player);
-        if (playerData == null) return;
-        if (playerData.shouldNotSave()) return;
+        PluginPlayer pluginPlayer = playerManager.getPlayerData(player);
+        if (pluginPlayer == null) return;
+        if (pluginPlayer.shouldNotSave()) return;
         // Don't save if blank profile
-        if (!OptionL.getBoolean(Option.SAVE_BLANK_PROFILES) && playerData.isBlankProfile()) {
+        if (!OptionL.getBoolean(Option.SAVE_BLANK_PROFILES) && pluginPlayer.isBlankProfile()) {
             return;
         }
         // Save lock
-        if (playerData.isSaving()) return;
-        playerData.setSaving(true);
+        if (pluginPlayer.isSaving()) return;
+        pluginPlayer.setSaving(true);
         // Load file
         File file = new File(plugin.getDataFolder() + "/playerdata/" + player.getUniqueId() + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -202,34 +202,34 @@ public class YamlStorageProvider extends StorageProvider {
             // Save skill data
             for (Skill skill : Skills.values()) {
                 String path = "skills." + skill.toString().toLowerCase(Locale.ROOT) + ".";
-                config.set(path + "level", playerData.getSkillLevel(skill));
-                config.set(path + "xp", playerData.getSkillXp(skill));
+                config.set(path + "level", pluginPlayer.getSkillLevel(skill));
+                config.set(path + "xp", pluginPlayer.getSkillXp(skill));
             }
             config.set("stat_modifiers", null); // Clear existing modifiers
             // Save stat modifiers
             int count = 0;
-            for (StatModifier modifier : playerData.getStatModifiers().values()) {
+            for (StatModifier modifier : pluginPlayer.getStatModifiers().values()) {
                 String path = "stat_modifiers." + count + ".";
                 config.set(path + "name", modifier.getName());
                 config.set(path + "stat", modifier.getStat().toString().toLowerCase(Locale.ROOT));
                 config.set(path + "value", modifier.getValue());
                 count++;
             }
-            config.set("mana", playerData.getMana()); // Save mana
+            config.set("mana", pluginPlayer.getMana()); // Save mana
             // Save locale
-            Locale locale = playerData.getLocale();
+            Locale locale = pluginPlayer.getLocale();
             if (locale != null) {
                 config.set("locale", locale.toString());
             }
             // Save ability data
-            for (AbilityData abilityData : playerData.getAbilityDataMap().values()) {
+            for (AbilityData abilityData : pluginPlayer.getAbilityDataMap().values()) {
                 String path = "ability_data." + abilityData.getAbility().toString().toLowerCase(Locale.ROOT) + ".";
                 for (Map.Entry<String, Object> entry : abilityData.getDataMap().entrySet()) {
                     config.set(path + entry.getKey(), entry.getValue());
                 }
             }
             // Save unclaimed items
-            List<KeyIntPair> unclaimedItems = playerData.getUnclaimedItems();
+            List<KeyIntPair> unclaimedItems = pluginPlayer.getUnclaimedItems();
             config.set("unclaimed_items", null);
             if (unclaimedItems != null && unclaimedItems.size() > 0) {
                 List<String> stringList = new ArrayList<>();
@@ -246,7 +246,7 @@ public class YamlStorageProvider extends StorageProvider {
             Bukkit.getLogger().warning("There was an error saving player data for player " + player.getName() + " with UUID " + player.getUniqueId() + ", see below for details.");
             e.printStackTrace();
         }
-        playerData.setSaving(false); // Unlock
+        pluginPlayer.setSaving(false); // Unlock
     }
 
     @Override
@@ -260,9 +260,9 @@ public class YamlStorageProvider extends StorageProvider {
                     // Load levels and xp from backup
                     Map<Skill, Integer> levels = getLevelsFromBackup(playerDataSection, stringId);
                     Map<Skill, Double> xpLevels = getXpLevelsFromBackup(playerDataSection, stringId);
-                    PlayerData playerData = playerManager.getPlayerData(id);
-                    if (playerData != null) {
-                        applyData(playerData, levels, xpLevels);
+                    PluginPlayer pluginPlayer = playerManager.getPlayerData(id);
+                    if (pluginPlayer != null) {
+                        applyData(pluginPlayer, levels, xpLevels);
                     } else {
                         // Load file for offline players
                         File file = new File(plugin.getDataFolder() + "/playerdata/" + id + ".yml");

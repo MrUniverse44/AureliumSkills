@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.LevelerMessage;
@@ -226,9 +226,9 @@ public class ItemCommand extends BaseCommand {
             }
             // Add to unclaimed items if leftover
             if (leftoverItem != null) {
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    playerData.getUnclaimedItems().add(new KeyIntPair(key, leftoverItem.getAmount()));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    pluginPlayer.getUnclaimedItems().add(new KeyIntPair(key, leftoverItem.getAmount()));
                     player.sendMessage(AureliumSkills.getPrefix(locale) + Lang.getMessage(LevelerMessage.UNCLAIMED_ITEM, locale));
                 }
             }

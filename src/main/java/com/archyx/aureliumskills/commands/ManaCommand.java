@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.*;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.util.math.NumberUtil;
@@ -30,20 +30,20 @@ public class ManaCommand extends BaseCommand {
     public void onMana(CommandSender sender, @Flags("other") @CommandPermission("aureliumskills.mana.other") @Optional Player player) {
         if (sender instanceof Player && player == null) {
             Player target = (Player) sender;
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(target);
-            if (playerData == null) return;
-            Locale locale = playerData.getLocale();
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(target);
+            if (pluginPlayer == null) return;
+            Locale locale = pluginPlayer.getLocale();
             sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_DISPLAY, locale)
-                    , "{current}", NumberUtil.format1(playerData.getMana())
-                    , "{max}", NumberUtil.format1(playerData.getMaxMana())));
+                    , "{current}", NumberUtil.format1(pluginPlayer.getMana())
+                    , "{max}", NumberUtil.format1(pluginPlayer.getMaxMana())));
         } else if (player != null) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
-            Locale locale = playerData.getLocale();
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
+            Locale locale = pluginPlayer.getLocale();
             sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_DISPLAY_OTHER, locale)
                     , "{player}", player.getName()
-                    , "{current}", NumberUtil.format1(playerData.getMana())
-                    , "{max}", NumberUtil.format1(playerData.getMaxMana())));
+                    , "{current}", NumberUtil.format1(pluginPlayer.getMana())
+                    , "{max}", NumberUtil.format1(pluginPlayer.getMaxMana())));
         } else {
             sender.sendMessage(AureliumSkills.getPrefix(Lang.getDefaultLanguage()) + Lang.getMessage(CommandMessage.MANA_CONSOLE_SPECIFY_PLAYER, Lang.getDefaultLanguage()));
         }
@@ -54,29 +54,29 @@ public class ManaCommand extends BaseCommand {
     @CommandCompletion("@players @nothing false|true")
     @Description("Adds mana to a player")
     public void onManaAdd(CommandSender sender, @Flags("other") Player player, double amount, @Default("true") boolean allowOverMax, @Default("false") boolean silent) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        Locale locale = playerData.getLocale();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        Locale locale = pluginPlayer.getLocale();
         if (amount >= 0) {
             if (allowOverMax && OptionL.getBoolean(Option.WISDOM_ALLOW_OVER_MAX_MANA)) {
-                playerData.setMana(playerData.getMana() + amount);
+                pluginPlayer.setMana(pluginPlayer.getMana() + amount);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_ADD, locale)
                             , "{amount}", NumberUtil.format2(amount)
                             , "{player}", player.getName()));
                 }
             } else {
-                if (playerData.getMana() + amount <= playerData.getMaxMana()) {
-                    playerData.setMana(playerData.getMana() + amount);
+                if (pluginPlayer.getMana() + amount <= pluginPlayer.getMaxMana()) {
+                    pluginPlayer.setMana(pluginPlayer.getMana() + amount);
                     if (!silent) {
                         sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_ADD, locale)
                                 , "{amount}", NumberUtil.format2(amount)
                                 , "{player}", player.getName()));
                     }
                 } else {
-                    double added = playerData.getMaxMana() - playerData.getMana();
+                    double added = pluginPlayer.getMaxMana() - pluginPlayer.getMana();
                     if (added >= 0) {
-                        playerData.setMana(playerData.getMaxMana());
+                        pluginPlayer.setMana(pluginPlayer.getMaxMana());
                         if (!silent) {
                             sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_ADD, locale)
                                     , "{amount}", NumberUtil.format2(added)
@@ -103,20 +103,20 @@ public class ManaCommand extends BaseCommand {
     @CommandCompletion("@players")
     @Description("Removes mana from a player")
     public void onManaRemove(CommandSender sender, @Flags("other") Player player, double amount, @Default("false") boolean silent) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        Locale locale = playerData.getLocale();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        Locale locale = pluginPlayer.getLocale();
         if (amount >= 0) {
-            if (playerData.getMana() - amount >= 0) {
-                playerData.setMana(playerData.getMana() - amount);
+            if (pluginPlayer.getMana() - amount >= 0) {
+                pluginPlayer.setMana(pluginPlayer.getMana() - amount);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_REMOVE, locale)
                             , "{amount}", NumberUtil.format2(amount)
                             , "{player}", player.getName()));
                 }
             } else {
-                double removed = playerData.getMana();
-                playerData.setMana(0);
+                double removed = pluginPlayer.getMana();
+                pluginPlayer.setMana(0);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_REMOVE, locale)
                             , "{amount}", NumberUtil.format2(removed)
@@ -135,30 +135,30 @@ public class ManaCommand extends BaseCommand {
     @CommandCompletion("@players @nothing false|true")
     @Description("Sets the mana of player")
     public void onManaSet(CommandSender sender, @Flags("other") Player player, double amount, @Default("true") boolean allowOverMax, @Default("false") boolean silent) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        Locale locale = playerData.getLocale();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        Locale locale = pluginPlayer.getLocale();
         if (amount >= 0) {
             if (allowOverMax && OptionL.getBoolean(Option.WISDOM_ALLOW_OVER_MAX_MANA)) {
-                playerData.setMana(amount);
+                pluginPlayer.setMana(amount);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_SET, locale)
                             , "{amount}", NumberUtil.format2(amount)
                             , "{player}", player.getName()));
                 }
             } else {
-                if (amount <= playerData.getMaxMana()) {
-                    playerData.setMana(amount);
+                if (amount <= pluginPlayer.getMaxMana()) {
+                    pluginPlayer.setMana(amount);
                     if (!silent) {
                         sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_SET, locale)
                                 , "{amount}", NumberUtil.format2(amount)
                                 , "{player}", player.getName()));
                     }
                 } else {
-                    playerData.setMana(playerData.getMaxMana());
+                    pluginPlayer.setMana(pluginPlayer.getMaxMana());
                     if (!silent) {
                         sender.sendMessage(AureliumSkills.getPrefix(locale) + TextUtil.replace(Lang.getMessage(CommandMessage.MANA_SET, locale)
-                                , "{amount}", NumberUtil.format2(playerData.getMaxMana())
+                                , "{amount}", NumberUtil.format2(pluginPlayer.getMaxMana())
                                 , "{player}", player.getName()));
                     }
                 }

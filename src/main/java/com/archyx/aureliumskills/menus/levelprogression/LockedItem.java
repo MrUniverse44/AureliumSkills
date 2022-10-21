@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.menus.levelprogression;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.skills.Skill;
@@ -45,10 +45,10 @@ public class LockedItem extends SkillLevelItem {
 
     @Override
     public Set<Integer> getDefinedContexts(Player player, ActiveMenu activeMenu) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             Skill skill = (Skill) activeMenu.getProperty("skill");
-            int level = playerData.getSkillLevel(skill);
+            int level = pluginPlayer.getSkillLevel(skill);
             int itemsPerPage = getItemsPerPage(activeMenu);
             int currentPage = activeMenu.getCurrentPage();
             Set<Integer> levels = new HashSet<>();

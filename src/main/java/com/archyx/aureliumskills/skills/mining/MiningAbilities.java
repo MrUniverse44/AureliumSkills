@@ -6,7 +6,7 @@ import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.modifier.StatModifier;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.stats.Stats;
@@ -41,10 +41,10 @@ public class MiningAbilities extends AbilityProvider implements Listener {
 		if (OptionL.isEnabled(Skills.MINING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.LUCKY_MINER)) {
 				if (player.getGameMode().equals(GameMode.SURVIVAL)) {
-					PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-					if (playerData == null) return;
-					if (playerData.getAbilityLevel(Ability.LUCKY_MINER) > 0) {
-						if (r.nextDouble() < (getValue(Ability.LUCKY_MINER, playerData) / 100)) {
+					PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+					if (pluginPlayer == null) return;
+					if (pluginPlayer.getAbilityLevel(Ability.LUCKY_MINER) > 0) {
+						if (r.nextDouble() < (getValue(Ability.LUCKY_MINER, pluginPlayer) / 100)) {
 							ItemStack tool = player.getInventory().getItemInMainHand();
 							Material mat = block.getType();
 							if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
@@ -76,15 +76,15 @@ public class MiningAbilities extends AbilityProvider implements Listener {
 		}
 	}
 
-	public void pickMaster(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+	public void pickMaster(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
 		if (OptionL.isEnabled(Skills.MINING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.PICK_MASTER)) {
 				//Check permission
 				if (!player.hasPermission("aureliumskills.mining")) {
 					return;
 				}
-				if (playerData.getAbilityLevel(Ability.PICK_MASTER) > 0) {
-					event.setDamage(event.getDamage() * (1 + (getValue(Ability.PICK_MASTER, playerData) / 100)));
+				if (pluginPlayer.getAbilityLevel(Ability.PICK_MASTER) > 0) {
+					event.setDamage(event.getDamage() * (1 + (getValue(Ability.PICK_MASTER, pluginPlayer) / 100)));
 				}
 			}
 		}
@@ -97,26 +97,26 @@ public class MiningAbilities extends AbilityProvider implements Listener {
 		if (blockAbility(player)) return;
 		//Checks if item damaged is armor
 		if (ItemUtils.isArmor(event.getItem().getType())) {
-			PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-			if (playerData == null) return;
+			PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+			if (pluginPlayer == null) return;
 			//Applies ability
-			if (r.nextDouble() < (getValue(Ability.HARDENED_ARMOR, playerData) / 100)) {
+			if (r.nextDouble() < (getValue(Ability.HARDENED_ARMOR, pluginPlayer) / 100)) {
 				event.setCancelled(true);
 			}
 		}
 	}
 
-	public void applyStamina(PlayerData playerData) {
+	public void applyStamina(PluginPlayer pluginPlayer) {
 		if (OptionL.isEnabled(Skills.MINING)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.STAMINA)) {
-				if (playerData.getAbilityLevel(Ability.STAMINA) > 0) {
-					playerData.addStatModifier(new StatModifier("mining-stamina", Stats.TOUGHNESS, (int) getValue(Ability.STAMINA, playerData)));
+				if (pluginPlayer.getAbilityLevel(Ability.STAMINA) > 0) {
+					pluginPlayer.addStatModifier(new StatModifier("mining-stamina", Stats.TOUGHNESS, (int) getValue(Ability.STAMINA, pluginPlayer)));
 				}
 			}
 		}
 	}
 
-	public void removeStamina(PlayerData playerData) {
-		playerData.removeStatModifier("mining-stamina");
+	public void removeStamina(PluginPlayer pluginPlayer) {
+		pluginPlayer.removeStatModifier("mining-stamina");
 	}
 }

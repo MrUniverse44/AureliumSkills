@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.source.Source;
 import com.archyx.aureliumskills.source.SourceManager;
@@ -45,13 +45,13 @@ public abstract class SkillLeveler {
     }
 
     public double getXp(Player player, Source source) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             double output = getXp(source);
             if (ability != null) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
                     double modifier = 1;
-                    modifier += plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability)) / 100;
+                    modifier += plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability)) / 100;
                     output *= modifier;
                 }
             }
@@ -61,13 +61,13 @@ public abstract class SkillLeveler {
     }
 
     public double getXp(Player player, double input) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             double output = input;
             if (ability != null) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
                     double modifier = 1;
-                    modifier += plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability)) / 100;
+                    modifier += plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability)) / 100;
                     output *= modifier;
                 }
             }
@@ -77,13 +77,13 @@ public abstract class SkillLeveler {
     }
 
     public double getXp(Player player, double input, Ability ability) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             double output = input;
             if (ability != null) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
                     double modifier = 1;
-                    modifier += plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability)) / 100;
+                    modifier += plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability)) / 100;
                     output *= modifier;
                 }
             }
@@ -202,8 +202,8 @@ public abstract class SkillLeveler {
         return !plugin.getAbilityManager().isEnabled(ability);
     }
 
-    public double getValue(Ability ability, PlayerData playerData) {
-        return plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability));
+    public double getValue(Ability ability, PluginPlayer pluginPlayer) {
+        return plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability));
     }
 
     protected boolean hasSilkTouch(Player player) {

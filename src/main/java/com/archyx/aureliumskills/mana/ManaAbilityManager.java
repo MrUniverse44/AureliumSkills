@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.api.event.ManaAbilityRefreshEvent;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
 import com.archyx.aureliumskills.configuration.OptionValue;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skill;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -88,9 +88,9 @@ public class ManaAbilityManager implements Listener {
     }
 
     public void setPlayerCooldown(Player player, MAbility mAbility) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            double cooldown = getCooldown(mAbility, playerData);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            double cooldown = getCooldown(mAbility, pluginPlayer);
             if (cooldown != 0) {
                 setPlayerCooldown(player.getUniqueId(), mAbility, (int) (cooldown * 20));
             }
@@ -188,9 +188,9 @@ public class ManaAbilityManager implements Listener {
                                 abilityCooldowns.put(ab, 0);
                             }
                             if (cooldown == 2 || cooldown == 1) {
-                                PlayerData playerData = plugin.getPlayerManager().getPlayerData(id);
-                                if (playerData != null) {
-                                    ManaAbilityRefreshEvent event = new ManaAbilityRefreshEvent(playerData.getBukkitPlayer(), ab);
+                                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(id);
+                                if (pluginPlayer != null) {
+                                    ManaAbilityRefreshEvent event = new ManaAbilityRefreshEvent(pluginPlayer.getBukkitPlayer(), ab);
                                     Bukkit.getPluginManager().callEvent(event);
                                 }
                             }
@@ -277,8 +277,8 @@ public class ManaAbilityManager implements Listener {
         return getBaseValue(mAbility) + (getValuePerLevel(mAbility) * (level - 1));
     }
 
-    public double getValue(MAbility mAbility, PlayerData playerData) {
-        return getValue(mAbility, playerData.getManaAbilityLevel(mAbility));
+    public double getValue(MAbility mAbility, PluginPlayer pluginPlayer) {
+        return getValue(mAbility, pluginPlayer.getManaAbilityLevel(mAbility));
     }
 
     public double getDisplayValue(MAbility mAbility, int level) {
@@ -310,8 +310,8 @@ public class ManaAbilityManager implements Listener {
         return cooldown > 0 ? cooldown : 0;
     }
 
-    public double getCooldown(MAbility mAbility, PlayerData playerData) {
-        double cooldown = getBaseCooldown(mAbility) + (getCooldownPerLevel(mAbility) * (playerData.getManaAbilityLevel(mAbility) - 1));
+    public double getCooldown(MAbility mAbility, PluginPlayer pluginPlayer) {
+        double cooldown = getBaseCooldown(mAbility) + (getCooldownPerLevel(mAbility) * (pluginPlayer.getManaAbilityLevel(mAbility) - 1));
         return cooldown > 0 ? cooldown : 0;
     }
 
@@ -331,8 +331,8 @@ public class ManaAbilityManager implements Listener {
         return mAbility.getDefaultCooldownPerLevel();
     }
 
-    public double getManaCost(MAbility mAbility, PlayerData playerData) {
-        return getBaseManaCost(mAbility) + (getManaCostPerLevel(mAbility) * (playerData.getManaAbilityLevel(mAbility) - 1));
+    public double getManaCost(MAbility mAbility, PluginPlayer pluginPlayer) {
+        return getBaseManaCost(mAbility) + (getManaCostPerLevel(mAbility) * (pluginPlayer.getManaAbilityLevel(mAbility) - 1));
     }
 
     public double getManaCost(MAbility mAbility, int level) {

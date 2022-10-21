@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.menus.levelprogression;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.slate.menu.ConfigurableMenu;
 import org.bukkit.entity.Player;
@@ -18,8 +18,8 @@ public class LevelProgressionOpener {
         this.plugin = plugin;
     }
 
-    public void open(Player player, PlayerData playerData, Skill skill) {
-        int page = getPage(skill, playerData);
+    public void open(Player player, PluginPlayer pluginPlayer, Skill skill) {
+        int page = getPage(skill, pluginPlayer);
         Map<String, Object> properties = new HashMap<>();
         properties.put("skill", skill);
         // Get items per page from options, default to 24
@@ -36,8 +36,8 @@ public class LevelProgressionOpener {
         plugin.getMenuManager().openMenu(player, "level_progression", properties, page);
     }
 
-    protected int getPage(Skill skill, PlayerData playerData) {
-        int page = (playerData.getSkillLevel(skill) - 2) / 24;
+    protected int getPage(Skill skill, PluginPlayer pluginPlayer) {
+        int page = (pluginPlayer.getSkillLevel(skill) - 2) / 24;
         int maxLevelPage = (OptionL.getMaxLevel(skill) - 2) / 24;
         if (page > maxLevelPage) {
             page = maxLevelPage;

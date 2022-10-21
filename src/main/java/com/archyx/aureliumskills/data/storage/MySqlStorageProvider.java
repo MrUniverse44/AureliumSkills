@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.AbstractAbility;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
 import com.archyx.aureliumskills.data.AbilityData;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.data.PlayerDataState;
 import com.archyx.aureliumskills.lang.CommandMessage;
@@ -86,15 +86,15 @@ public class MySqlStorageProvider extends StorageProvider {
                 statement.setString(1, player.getUniqueId().toString());
                 try (ResultSet result = statement.executeQuery()) {
                     if (result.next()) {
-                        PlayerData playerData = new PlayerData(player, plugin);
+                        PluginPlayer pluginPlayer = new PluginPlayer(player, plugin);
                         // Load skill data
                         for (Skill skill : Skills.values()) {
                             int level = result.getInt(skill.name().toUpperCase(Locale.ROOT) + "_LEVEL");
                             double xp = result.getDouble(skill.name().toUpperCase(Locale.ROOT) + "_XP");
-                            playerData.setSkillLevel(skill, level);
-                            playerData.setSkillXp(skill, xp);
+                            pluginPlayer.setSkillLevel(skill, level);
+                            pluginPlayer.setSkillXp(skill, xp);
                             // Add stat levels
-                            plugin.getRewardManager().getRewardTable(skill).applyStats(playerData, level);
+                            plugin.getRewardManager().getRewardTable(skill).applyStats(pluginPlayer, level);
                         }
                         // Load stat modifiers
                         String statModifiers = result.getString("STAT_MODIFIERS");
@@ -108,15 +108,15 @@ public class MySqlStorageProvider extends StorageProvider {
                                 if (name != null && statName != null) {
                                     Stat stat = plugin.getStatRegistry().getStat(statName);
                                     StatModifier modifier = new StatModifier(name, stat, value);
-                                    playerData.addStatModifier(modifier);
+                                    pluginPlayer.addStatModifier(modifier);
                                 }
                             }
                         }
-                        playerData.setMana(result.getDouble("mana"));
+                        pluginPlayer.setMana(result.getDouble("mana"));
                         // Load locale
                         String locale = result.getString("locale");
                         if (locale != null) {
-                            playerData.setLocale(new Locale(locale));
+                            pluginPlayer.setLocale(new Locale(locale));
                         }
                         // Load ability data
                         String abilityData = result.getString("ABILITY_DATA");
@@ -126,7 +126,7 @@ public class MySqlStorageProvider extends StorageProvider {
                                 String abilityName = abilityEntry.getKey();
                                 AbstractAbility ability = AbstractAbility.valueOf(abilityName.toUpperCase(Locale.ROOT));
                                 if (ability != null) {
-                                    AbilityData data = playerData.getAbilityData(ability);
+                                    AbilityData data = pluginPlayer.getAbilityData(ability);
                                     JsonObject dataObject = abilityEntry.getValue().getAsJsonObject();
                                     for (Map.Entry<String, JsonElement> dataEntry : dataObject.entrySet()) {
                                         String key = dataEntry.getKey();
@@ -155,12 +155,12 @@ public class MySqlStorageProvider extends StorageProvider {
                                 }
                                 unclaimedItems.add(new KeyIntPair(itemKey, amount));
                             }
-                            playerData.setUnclaimedItems(unclaimedItems);
-                            playerData.clearInvalidItems();
+                            pluginPlayer.setUnclaimedItems(unclaimedItems);
+                            pluginPlayer.clearInvalidItems();
                         }
-                        playerManager.addPlayerData(playerData);
+                        playerManager.addPlayerData(pluginPlayer);
                         plugin.getLeveler().updatePermissions(player);
-                        PlayerDataLoadEvent event = new PlayerDataLoadEvent(playerData);
+                        PlayerDataLoadEvent event = new PlayerDataLoadEvent(pluginPlayer);
                         new BukkitRunnable() {
                             @Override
                             public void run() {
@@ -175,8 +175,8 @@ public class MySqlStorageProvider extends StorageProvider {
         } catch (Exception e) {
             Bukkit.getLogger().warning("There was an error loading player data for player " + player.getName() + " with UUID " + player.getUniqueId() + ", see below for details.");
             e.printStackTrace();
-            PlayerData playerData = createNewPlayer(player);
-            playerData.setShouldSave(false);
+            PluginPlayer pluginPlayer = createNewPlayer(player);
+            pluginPlayer.setShouldSave(false);
             sendErrorMessageToPlayer(player, e);
         }
     }
@@ -263,11 +263,11 @@ public class MySqlStorageProvider extends StorageProvider {
 
     @Override
     public void save(Player player, boolean removeFromMemory) {
-        PlayerData playerData = playerManager.getPlayerData(player);
-        if (playerData == null) return;
-        if (playerData.shouldNotSave()) return;
+        PluginPlayer pluginPlayer = playerManager.getPlayerData(player);
+        if (pluginPlayer == null) return;
+        if (pluginPlayer.shouldNotSave()) return;
         // Don't save if blank profile
-        if (!OptionL.getBoolean(Option.SAVE_BLANK_PROFILES) && playerData.isBlankProfile()) {
+        if (!OptionL.getBoolean(Option.SAVE_BLANK_PROFILES) && pluginPlayer.isBlankProfile()) {
             return;
         }
         try {
@@ -297,15 +297,15 @@ public class MySqlStorageProvider extends StorageProvider {
                 int index = 2;
                 for (int i = 0; i < 2; i++) {
                     for (Skill skill : Skills.getOrderedValues()) {
-                        statement.setInt(index++, playerData.getSkillLevel(skill));
-                        statement.setDouble(index++, playerData.getSkillXp(skill));
+                        statement.setInt(index++, pluginPlayer.getSkillLevel(skill));
+                        statement.setDouble(index++, pluginPlayer.getSkillXp(skill));
                     }
-                    statement.setString(index++, playerData.getLocale().toString());
+                    statement.setString(index++, pluginPlayer.getLocale().toString());
                     // Build stat modifiers json
                     StringBuilder modifiersJson = new StringBuilder();
-                    if (playerData.getStatModifiers().size() > 0) {
+                    if (pluginPlayer.getStatModifiers().size() > 0) {
                         modifiersJson.append("[");
-                        for (StatModifier statModifier : playerData.getStatModifiers().values()) {
+                        for (StatModifier statModifier : pluginPlayer.getStatModifiers().values()) {
                             modifiersJson.append("{\"name\":\"").append(statModifier.getName())
                                     .append("\",\"stat\":\"").append(statModifier.getStat().toString().toLowerCase(Locale.ROOT))
                                     .append("\",\"value\":").append(statModifier.getValue()).append("},");
@@ -319,12 +319,12 @@ public class MySqlStorageProvider extends StorageProvider {
                     } else {
                         statement.setNull(index++, Types.VARCHAR);
                     }
-                    statement.setDouble(index++, playerData.getMana()); // Set mana
+                    statement.setDouble(index++, pluginPlayer.getMana()); // Set mana
                     // Build ability json
                     StringBuilder abilityJson = new StringBuilder();
-                    if (playerData.getAbilityDataMap().size() > 0) {
+                    if (pluginPlayer.getAbilityDataMap().size() > 0) {
                         abilityJson.append("{");
-                        for (AbilityData abilityData : playerData.getAbilityDataMap().values()) {
+                        for (AbilityData abilityData : pluginPlayer.getAbilityDataMap().values()) {
                             String abilityName = abilityData.getAbility().toString().toLowerCase(Locale.ROOT);
                             if (abilityData.getDataMap().size() > 0) {
                                 abilityJson.append("\"").append(abilityName).append("\"").append(":{");
@@ -352,7 +352,7 @@ public class MySqlStorageProvider extends StorageProvider {
                     }
                     // Unclaimed items
                     StringBuilder unclaimedItemsStringBuilder = new StringBuilder();
-                    List<KeyIntPair> unclaimedItems = playerData.getUnclaimedItems();
+                    List<KeyIntPair> unclaimedItems = pluginPlayer.getUnclaimedItems();
                     if (unclaimedItems != null) {
                         for (KeyIntPair unclaimedItem : unclaimedItems) {
                             unclaimedItemsStringBuilder.append(unclaimedItem.getKey()).append(" ").append(unclaimedItem.getValue()).append(",");
@@ -389,9 +389,9 @@ public class MySqlStorageProvider extends StorageProvider {
                     // Load levels and xp from backup
                     Map<Skill, Integer> levels = getLevelsFromBackup(playerDataSection, stringId);
                     Map<Skill, Double> xpLevels = getXpLevelsFromBackup(playerDataSection, stringId);
-                    PlayerData playerData = playerManager.getPlayerData(id);
-                    if (playerData != null) {
-                        applyData(playerData, levels, xpLevels);
+                    PluginPlayer pluginPlayer = playerManager.getPlayerData(id);
+                    if (pluginPlayer != null) {
+                        applyData(pluginPlayer, levels, xpLevels);
                     } else {
                         StringBuilder sqlBuilder = new StringBuilder("INSERT INTO SkillData (ID, ");
                         for (Skill skill : Skills.getOrderedValues()) {

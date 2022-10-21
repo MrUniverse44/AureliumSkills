@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.menus.abilities;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.mana.MAbility;
@@ -56,9 +56,9 @@ public class LockedManaAbilityItem extends AbstractManaAbilityItem implements Te
         Set<MAbility> lockedManaAbilities = new HashSet<>();
         Skill skill = (Skill) activeMenu.getProperty("skill");
         MAbility mAbility = skill.getManaAbility();
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (mAbility != null && playerData != null) {
-            if (playerData.getManaAbilityLevel(mAbility) <= 0) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (mAbility != null && pluginPlayer != null) {
+            if (pluginPlayer.getManaAbilityLevel(mAbility) <= 0) {
                 lockedManaAbilities.add(mAbility);
             }
         }

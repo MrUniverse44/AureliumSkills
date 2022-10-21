@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.api;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.modifier.ModifierType;
 import com.archyx.aureliumskills.modifier.Modifiers;
@@ -52,18 +52,18 @@ public class AureliumAPI {
      * @return the current mana of a player
      */
     public static double getMana(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getMana();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getMana();
         }
         return 0.0;
     }
 
     @Deprecated
     public static double getMana(UUID playerId) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            return playerData.getMana();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getMana();
         }
         return 0.0;
     }
@@ -73,9 +73,9 @@ public class AureliumAPI {
      * @return the max mana of a player
      */
     public static double getMaxMana(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getMaxMana();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getMaxMana();
         } else {
             return OptionL.getDouble(Option.BASE_MANA);
         }
@@ -86,9 +86,9 @@ public class AureliumAPI {
      * @return the mana regeneration per second of a player
      */
     public static double getManaRegen(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getManaRegen();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getManaRegen();
         } else {
             return OptionL.getDouble(Option.REGENERATION_BASE_MANA_REGEN);
         }
@@ -96,9 +96,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static double getMaxMana(UUID playerId) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            return playerData.getMaxMana();
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getMaxMana();
         } else {
             return OptionL.getDouble(Option.BASE_MANA);
         }
@@ -108,17 +108,17 @@ public class AureliumAPI {
      * Sets a player's mana to an amount
      */
     public static void setMana(Player player, double amount) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            playerData.setMana(amount);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            pluginPlayer.setMana(amount);
         }
     }
 
     @Deprecated
     public static void setMana(UUID playerId, double amount) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            playerData.setMana(amount);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            pluginPlayer.setMana(amount);
         }
     }
 
@@ -133,9 +133,9 @@ public class AureliumAPI {
      * Adds Skill XP to a player for a certain skill, without multipliers
      */
     public static void addXpRaw(Player player, Skill skill, double amount) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            playerData.addSkillXp(skill, amount);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            pluginPlayer.addSkillXp(skill, amount);
             plugin.getLeveler().checkLevelUp(player, skill);
         }
     }
@@ -146,9 +146,9 @@ public class AureliumAPI {
      */
     @Deprecated
     public static boolean addXpOffline(OfflinePlayer player, Skill skill, double amount) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
-        if (playerData != null) {
-            playerData.addSkillXp(skill, amount);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
+        if (pluginPlayer != null) {
+            pluginPlayer.addSkillXp(skill, amount);
             return true;
         }
         else {
@@ -158,9 +158,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static boolean addXpOffline(UUID playerId, Skill skill, double amount) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            playerData.addSkillXp(skill, amount);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            pluginPlayer.addSkillXp(skill, amount);
             return true;
         }
         else {
@@ -173,9 +173,9 @@ public class AureliumAPI {
      * @return the skill level of a player, or 1 if player does not have a skills profile
      */
     public static int getSkillLevel(Player player, Skill skill) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getSkillLevel(skill);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getSkillLevel(skill);
         }
         else {
             return 1;
@@ -184,9 +184,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static int getSkillLevel(UUID playerId, Skill skill) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            return playerData.getSkillLevel(skill);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getSkillLevel(skill);
         }
         else {
             return 1;
@@ -212,9 +212,9 @@ public class AureliumAPI {
      * @return The current skill xp
      */
     public static double getXp(Player player, Skill skill) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getSkillXp(skill);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getSkillXp(skill);
         }
         else {
             return 1;
@@ -223,7 +223,7 @@ public class AureliumAPI {
 
     @Deprecated
     public static double getXp(UUID playerId, Skill skill) {
-        PlayerData playerSkill = plugin.getPlayerManager().getPlayerData(playerId);
+        PluginPlayer playerSkill = plugin.getPlayerManager().getPlayerData(playerId);
         if (playerSkill != null) {
             return playerSkill.getSkillXp(skill);
         }
@@ -239,9 +239,9 @@ public class AureliumAPI {
      * @return The stat level
      */
     public static double getStatLevel(Player player, Stat stat) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getStatLevel(stat);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getStatLevel(stat);
         }
         else {
             return 0;
@@ -250,9 +250,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static double getStatLevel(UUID playerId, Stat stat) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            return playerData.getStatLevel(stat);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getStatLevel(stat);
         }
         else {
             return 0;
@@ -267,9 +267,9 @@ public class AureliumAPI {
      */
     @Deprecated
     public static double getBaseStatLevel(Player player, Stat stat) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            return playerData.getStatLevel(stat);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getStatLevel(stat);
         }
         else {
             return 0;
@@ -278,9 +278,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static double getBaseStatLevel(UUID playerId, Stat stat) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            return playerData.getStatLevel(stat);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            return pluginPlayer.getStatLevel(stat);
         }
         else {
             return 0;
@@ -296,9 +296,9 @@ public class AureliumAPI {
      * @return true if a modifier was added, false if the player does not have a skills profile
      */
     public static boolean addStatModifier(Player player, String name, Stat stat, double value) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            playerData.addStatModifier(new StatModifier(name, stat, value));
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            pluginPlayer.addStatModifier(new StatModifier(name, stat, value));
             return true;
         }
         return false;
@@ -306,9 +306,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static boolean addStatModifier(UUID playerId, String name, Stat stat, double value) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            playerData.addStatModifier(new StatModifier(name, stat, value));
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            pluginPlayer.addStatModifier(new StatModifier(name, stat, value));
             return true;
         }
         return false;
@@ -321,9 +321,9 @@ public class AureliumAPI {
      * @return true if the operation was successful, false if the stat modifier was not found or the player does not have a skills profile
      */
     public static boolean removeStatModifier(Player player, String name) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            playerData.removeStatModifier(name);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            pluginPlayer.removeStatModifier(name);
             return true;
         }
         return false;
@@ -331,9 +331,9 @@ public class AureliumAPI {
 
     @Deprecated
     public static boolean removeStatModifier(UUID playerId, String name) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(playerId);
-        if (playerData != null) {
-            playerData.removeStatModifier(name);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(playerId);
+        if (pluginPlayer != null) {
+            pluginPlayer.removeStatModifier(name);
             return true;
         }
         return false;

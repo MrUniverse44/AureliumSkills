@@ -8,14 +8,14 @@ public class PlayerDataLoadEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private final PlayerData playerData;
+    private final PluginPlayer pluginPlayer;
 
-    public PlayerDataLoadEvent(PlayerData playerData) {
-        this.playerData = playerData;
+    public PlayerDataLoadEvent(PluginPlayer pluginPlayer) {
+        this.pluginPlayer = pluginPlayer;
     }
 
-    public PlayerData getPlayerData() {
-        return playerData;
+    public PluginPlayer getPlayerData() {
+        return pluginPlayer;
     }
 
     @NotNull

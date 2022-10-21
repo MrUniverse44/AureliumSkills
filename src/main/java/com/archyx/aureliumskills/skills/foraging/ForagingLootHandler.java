@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.skills.foraging;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.api.event.LootDropCause;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.loot.handler.BlockLootHandler;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.source.Source;
@@ -22,8 +22,8 @@ public class ForagingLootHandler extends BlockLootHandler {
     }
 
     @Override
-    public double getChance(LootPool pool, PlayerData playerData) {
-        return getCommonChance(pool, playerData);
+    public double getChance(LootPool pool, PluginPlayer pluginPlayer) {
+        return getCommonChance(pool, pluginPlayer);
     }
 
     @Override

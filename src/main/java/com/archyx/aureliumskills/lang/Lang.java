@@ -6,7 +6,7 @@ import co.aikar.commands.PaperCommandManager;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.util.text.TextUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -303,9 +303,9 @@ public class Lang implements Listener {
 	}
 
 	public Locale getLocale(Player player) {
-		PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-		if (playerData != null) {
-			return playerData.getLocale();
+		PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+		if (pluginPlayer != null) {
+			return pluginPlayer.getLocale();
 		} else {
 			return getDefaultLanguage();
 		}
@@ -313,9 +313,9 @@ public class Lang implements Listener {
 
 	public Locale getLocale(CommandSender sender) {
 		if (sender instanceof Player) {
-			PlayerData playerData = plugin.getPlayerManager().getPlayerData((Player) sender);
-			if (playerData != null) {
-				return playerData.getLocale();
+			PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData((Player) sender);
+			if (pluginPlayer != null) {
+				return pluginPlayer.getLocale();
 			}
 		}
 		return getDefaultLanguage();
@@ -324,23 +324,23 @@ public class Lang implements Listener {
 	@EventHandler
 	public void onJoin(PlayerDataLoadEvent event) {
 		Player player = event.getPlayerData().getBukkitPlayer();
-		PlayerData playerData = event.getPlayerData();
-		if (playerData.getLocale() == null) {
+		PluginPlayer pluginPlayer = event.getPlayerData();
+		if (pluginPlayer.getLocale() == null) {
 			if (OptionL.getBoolean(Option.TRY_DETECT_CLIENT_LANGUAGE)) {
 				try {
 					Locale locale = new Locale(player.getLocale().split("_")[0].toLowerCase(Locale.ENGLISH));
 					if (messages.containsKey(locale)) {
-						playerData.setLocale(locale);
+						pluginPlayer.setLocale(locale);
 					} else {
-						playerData.setLocale(getDefaultLanguage());
+						pluginPlayer.setLocale(getDefaultLanguage());
 					}
 				} catch (Exception e) {
-					playerData.setLocale(getDefaultLanguage());
+					pluginPlayer.setLocale(getDefaultLanguage());
 				}
 			}
 			// Otherwise set to default
 			else {
-				playerData.setLocale(getDefaultLanguage());
+				pluginPlayer.setLocale(getDefaultLanguage());
 			}
 		}
 	}

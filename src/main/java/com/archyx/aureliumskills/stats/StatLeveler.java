@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.stats;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import org.bukkit.entity.Player;
 
 public class StatLeveler {
@@ -23,10 +23,10 @@ public class StatLeveler {
 		}
 		else if (stat.equals(Stats.WISDOM)) {
 			if (!OptionL.getBoolean(Option.WISDOM_ALLOW_OVER_MAX_MANA)) {
-				PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-				if (playerData == null) return;
-				if (playerData.getMana() > playerData.getMaxMana()) {
-					playerData.setMana(playerData.getMaxMana());
+				PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+				if (pluginPlayer == null) return;
+				if (pluginPlayer.getMana() > pluginPlayer.getMaxMana()) {
+					pluginPlayer.setMana(pluginPlayer.getMaxMana());
 				}
 			}
 		}

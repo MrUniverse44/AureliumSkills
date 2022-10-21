@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.listeners;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.mana.Absorption;
 import com.archyx.aureliumskills.mana.ChargedShot;
 import com.archyx.aureliumskills.mana.MAbility;
@@ -68,33 +68,33 @@ public class DamageListener implements Listener {
                 return;
             }
             //Gets player skill
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
 
             DamageType damageType = getDamageType(event, player);
 
             //Applies strength
-            strength.strength(event, playerData, damageType);
+            strength.strength(event, pluginPlayer, damageType);
 
             //Applies master abilities
             switch (damageType) {
                 case SWORD:
-                    fightingAbilities.swordMaster(event, player, playerData);
+                    fightingAbilities.swordMaster(event, player, pluginPlayer);
                     break;
                 case BOW:
-                    archeryAbilities.bowMaster(event, player, playerData);
+                    archeryAbilities.bowMaster(event, player, pluginPlayer);
                     break;
                 case AXE:
-                    foragingAbilities.axeMaster(event, player, playerData);
+                    foragingAbilities.axeMaster(event, player, pluginPlayer);
                     break;
                 case PICKAXE:
-                    miningAbilities.pickMaster(event, player, playerData);
+                    miningAbilities.pickMaster(event, player, pluginPlayer);
                     break;
                 case HOE:
-                    farmingAbilities.scytheMaster(event, player, playerData);
+                    farmingAbilities.scytheMaster(event, player, pluginPlayer);
                     break;
                 case SHOVEL:
-                    excavationAbilities.spadeMaster(event, player, playerData);
+                    excavationAbilities.spadeMaster(event, player, pluginPlayer);
                     break;
                 default:
                     break;
@@ -102,12 +102,12 @@ public class DamageListener implements Listener {
 
             //First strike
             if (damageType == DamageType.SWORD) {
-                fightingAbilities.firstStrike(event, playerData, player);
+                fightingAbilities.firstStrike(event, pluginPlayer, player);
             }
 
             //Critical
             if (OptionL.criticalEnabled(damageType)) {
-                critical.applyCrit(event, player, playerData);
+                critical.applyCrit(event, player, pluginPlayer);
             }
 
             // Charged shot
@@ -131,24 +131,24 @@ public class DamageListener implements Listener {
             return;
         }
         // Gets player skill
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
         // Checks for absorption activation and applies
         ManaAbilityProvider provider = plugin.getManaAbilityManager().getProvider(MAbility.ABSORPTION);
         if (provider instanceof Absorption) {
             Absorption absorption = (Absorption) provider;
-            absorption.handleAbsorption(event, player, playerData);
+            absorption.handleAbsorption(event, player, pluginPlayer);
         }
         if (event.isCancelled()) return;
 
         // Handles toughness
-        Toughness.onDamage(event, playerData);
+        Toughness.onDamage(event, pluginPlayer);
 
         // Handles mob master
-        defenseAbilities.mobMaster(event, playerData);
+        defenseAbilities.mobMaster(event, pluginPlayer);
 
         // Handles shielding
-        defenseAbilities.shielding(event, playerData, player);
+        defenseAbilities.shielding(event, pluginPlayer, player);
     }
 
     @SuppressWarnings("deprecation")

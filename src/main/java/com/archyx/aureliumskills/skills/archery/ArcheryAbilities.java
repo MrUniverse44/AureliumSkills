@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityManager;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -29,22 +29,22 @@ public class ArcheryAbilities extends AbilityProvider implements Listener {
         super(plugin, Skills.ARCHERY);
     }
 
-    public void bowMaster(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+    public void bowMaster(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
         if (OptionL.isEnabled(Skills.ARCHERY)) {
             if (plugin.getAbilityManager().isEnabled(Ability.BOW_MASTER)) {
                 if (!player.hasPermission("aureliumskills.archery")) {
                     return;
                 }
-                if (playerData.getAbilityLevel(Ability.BOW_MASTER) > 0) {
-                    double multiplier = 1 + (getValue(Ability.BOW_MASTER, playerData) / 100);
+                if (pluginPlayer.getAbilityLevel(Ability.BOW_MASTER) > 0) {
+                    double multiplier = 1 + (getValue(Ability.BOW_MASTER, pluginPlayer) / 100);
                     event.setDamage(event.getDamage() * multiplier);
                 }
             }
         }
     }
 
-    public void stun(PlayerData playerData, LivingEntity entity) {
-        if (r.nextDouble() < (getValue(Ability.STUN, playerData) / 100)) {
+    public void stun(PluginPlayer pluginPlayer, LivingEntity entity) {
+        if (r.nextDouble() < (getValue(Ability.STUN, pluginPlayer) / 100)) {
             if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
                 AttributeInstance speed = entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
                 if (speed != null) {
@@ -83,7 +83,7 @@ public class ArcheryAbilities extends AbilityProvider implements Listener {
         }
     }
 
-    public void piercing(EntityDamageByEntityEvent event, PlayerData playerData, Player player, Arrow arrow) {
+    public void piercing(EntityDamageByEntityEvent event, PluginPlayer pluginPlayer, Player player, Arrow arrow) {
         // Disable if enemy is blocking with a shield
         Entity damaged = event.getEntity();
         if (damaged instanceof Player) {
@@ -92,7 +92,7 @@ public class ArcheryAbilities extends AbilityProvider implements Listener {
                 return;
             }
         }
-        if (r.nextDouble() < (getValue(Ability.PIERCING, playerData) / 100)) {
+        if (r.nextDouble() < (getValue(Ability.PIERCING, pluginPlayer) / 100)) {
             arrow.setBounce(false);
             Vector velocity = arrow.getVelocity();
             Arrow newArrow = event.getEntity().getWorld().spawnArrow(arrow.getLocation(), velocity, (float) velocity.length(), 0.0f);
@@ -113,17 +113,17 @@ public class ArcheryAbilities extends AbilityProvider implements Listener {
                         Player player = (Player) arrow.getShooter();
                         if (blockAbility(player)) return;
                         // Applies abilities
-                        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                        if (playerData == null) return;
+                        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                        if (pluginPlayer == null) return;
                         AbilityManager options = plugin.getAbilityManager();
                         if (options.isEnabled(Ability.STUN)) {
                             if (event.getEntity() instanceof LivingEntity) {
                                 LivingEntity entity = (LivingEntity) event.getEntity();
-                                stun(playerData, entity);
+                                stun(pluginPlayer, entity);
                             }
                         }
                         if (options.isEnabled(Ability.PIERCING)) {
-                            piercing(event, playerData, player, arrow);
+                            piercing(event, pluginPlayer, player, arrow);
                         }
                     }
                 }

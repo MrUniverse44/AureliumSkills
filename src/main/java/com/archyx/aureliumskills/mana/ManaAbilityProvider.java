@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.mana;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.ManaAbilityActivateEvent;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.skills.Skill;
@@ -40,18 +40,18 @@ public abstract class ManaAbilityProvider extends AbilityProvider implements Lis
     }
 
     public void activate(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
 
-        int duration = getDuration(playerData);
+        int duration = getDuration(pluginPlayer);
         ManaAbilityActivateEvent event = new ManaAbilityActivateEvent(player, mAbility, duration);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
         manager.setActivated(player, mAbility, true);
 
-        onActivate(player, playerData); // Mana ability specific behavior is run
-        consumeMana(player, playerData);
+        onActivate(player, pluginPlayer); // Mana ability specific behavior is run
+        consumeMana(player, pluginPlayer);
 
         if (duration != 0) {
             //Schedules stop
@@ -70,12 +70,12 @@ public abstract class ManaAbilityProvider extends AbilityProvider implements Lis
         }
     }
 
-    public abstract void onActivate(Player player, PlayerData playerData);
+    public abstract void onActivate(Player player, PluginPlayer pluginPlayer);
 
     public void stop(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        onStop(player, playerData); // Mana ability specific stop behavior is run
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        onStop(player, pluginPlayer); // Mana ability specific stop behavior is run
         manager.setPlayerCooldown(player, mAbility); // Apply cooldown
         // Send stop message if applicable
         if (stopMessage != null) {
@@ -83,33 +83,33 @@ public abstract class ManaAbilityProvider extends AbilityProvider implements Lis
         }
     }
 
-    public abstract void onStop(Player player, PlayerData playerData);
+    public abstract void onStop(Player player, PluginPlayer pluginPlayer);
 
-    protected int getDuration(PlayerData playerData) {
-        return (int) Math.round(getValue(mAbility, playerData) * 20);
+    protected int getDuration(PluginPlayer pluginPlayer) {
+        return (int) Math.round(getValue(mAbility, pluginPlayer) * 20);
     }
 
-    protected void consumeMana(Player player, PlayerData playerData) {
-        double manaConsumed = manager.getManaCost(mAbility, playerData);
-        playerData.setMana(playerData.getMana() - manaConsumed);
+    protected void consumeMana(Player player, PluginPlayer pluginPlayer) {
+        double manaConsumed = manager.getManaCost(mAbility, pluginPlayer);
+        pluginPlayer.setMana(pluginPlayer.getMana() - manaConsumed);
         sorceryLeveler.level(player, manaConsumed);
-        plugin.getAbilityManager().sendMessage(player, TextUtil.replace(Lang.getMessage(activateMessage, playerData.getLocale())
+        plugin.getAbilityManager().sendMessage(player, TextUtil.replace(Lang.getMessage(activateMessage, pluginPlayer.getLocale())
                 ,"{mana}", NumberUtil.format0(manaConsumed)));
     }
 
     // Returns true if player has enough mana
     protected boolean hasEnoughMana(Player player) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return false;
-        Locale locale = playerData.getLocale();
-        if (playerData.getMana() >= plugin.getManaAbilityManager().getManaCost(mAbility, playerData)) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return false;
+        Locale locale = pluginPlayer.getLocale();
+        if (pluginPlayer.getMana() >= plugin.getManaAbilityManager().getManaCost(mAbility, pluginPlayer)) {
             return true;
         }
         else {
             plugin.getAbilityManager().sendMessage(player, TextUtil.replace(Lang.getMessage(ManaAbilityMessage.NOT_ENOUGH_MANA, locale)
-                    ,"{mana}", NumberUtil.format0(plugin.getManaAbilityManager().getManaCost(mAbility, playerData))
-                    , "{current_mana}", String.valueOf(Math.round(playerData.getMana()))
-                    , "{max_mana}", String.valueOf(Math.round(playerData.getMaxMana()))));
+                    ,"{mana}", NumberUtil.format0(plugin.getManaAbilityManager().getManaCost(mAbility, pluginPlayer))
+                    , "{current_mana}", String.valueOf(Math.round(pluginPlayer.getMana()))
+                    , "{max_mana}", String.valueOf(Math.round(pluginPlayer.getMaxMana()))));
             return false;
         }
     }

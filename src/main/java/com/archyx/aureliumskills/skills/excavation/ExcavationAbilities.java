@@ -6,7 +6,7 @@ import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.util.version.VersionUtils;
 import org.bukkit.Bukkit;
@@ -30,15 +30,15 @@ public class ExcavationAbilities extends AbilityProvider implements Listener {
 		super(plugin, Skills.EXCAVATION);
 	}
 
-	public void spadeMaster(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+	public void spadeMaster(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
 		if (OptionL.isEnabled(Skills.EXCAVATION)) {
 			if (plugin.getAbilityManager().isEnabled(Ability.SPADE_MASTER)) {
 				//Check permission
 				if (!player.hasPermission("aureliumskills.excavation")) {
 					return;
 				}
-				if (playerData.getAbilityLevel(Ability.SPADE_MASTER) > 0) {
-					event.setDamage(event.getDamage() * (1 + (getValue(Ability.SPADE_MASTER, playerData) / 100)));
+				if (pluginPlayer.getAbilityLevel(Ability.SPADE_MASTER) > 0) {
+					event.setDamage(event.getDamage() * (1 + (getValue(Ability.SPADE_MASTER, pluginPlayer) / 100)));
 				}
 			}
 		}
@@ -47,10 +47,10 @@ public class ExcavationAbilities extends AbilityProvider implements Listener {
 	@SuppressWarnings("deprecation")
 	public void biggerScoop(ExcavationSource source, Block block, Player player) {
 		if (!plugin.getAbilityManager().isEnabled(Ability.BIGGER_SCOOP)) return;
-		PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-		if (playerData == null) return;
+		PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+		if (pluginPlayer == null) return;
 		if (player.getGameMode() != GameMode.SURVIVAL) return;
-		if (r.nextDouble() < (getValue(Ability.BIGGER_SCOOP, playerData) / 100)) {
+		if (r.nextDouble() < (getValue(Ability.BIGGER_SCOOP, pluginPlayer) / 100)) {
 			ItemStack tool = player.getInventory().getItemInMainHand();
 			Material mat =  block.getType();
 			for (ItemStack item : block.getDrops(tool)) {

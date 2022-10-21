@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.XpGainEvent;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.util.item.ItemUtils;
 import com.archyx.aureliumskills.util.mechanics.EnchantmentValue;
@@ -57,9 +57,9 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
             if (player.getItemOnCursor().getType() != Material.AIR) return; // Make sure cursor is empty
             if (event.getClickedInventory().getType() == InventoryType.GRINDSTONE) {
                 if (event.getSlotType() == InventoryType.SlotType.RESULT) {
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData == null) return;
-                    if (playerData.getAbilityLevel(Ability.DISENCHANTER) == 0) return;
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer == null) return;
+                    if (pluginPlayer.getAbilityLevel(Ability.DISENCHANTER) == 0) return;
                     Location location = inventory.getLocation();
                     if (location == null) return;
                     ItemStack first = inventory.getItem(0);
@@ -84,7 +84,7 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
                             }
                         }
                         int average = (sum + (int) Math.ceil(((double) sum) / 2)) / 2; // Get the average experience that would drop
-                        int added = (int) Math.round(average * (getValue(Ability.DISENCHANTER, playerData) / 100));
+                        int added = (int) Math.round(average * (getValue(Ability.DISENCHANTER, pluginPlayer) / 100));
                         World world = location.getWorld();
                         if (world != null) {
                             world.spawn(location, ExperienceOrb.class).setExperience(added);
@@ -113,9 +113,9 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
         if (player == null) return;
         if (blockAbility(player)) return;
         AnvilInventory inventory = event.getInventory();
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        if (playerData.getAbilityLevel(Ability.REPAIRING) == 0) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        if (pluginPlayer.getAbilityLevel(Ability.REPAIRING) == 0) return;
         ItemStack first = inventory.getItem(0);
         ItemStack second = inventory.getItem(1);
         ItemStack result = event.getResult();
@@ -131,7 +131,7 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
                     Damageable damageable = (Damageable) meta;
                     short max = first.getType().getMaxDurability();
                     // Calculate durability to add, vanilla by default adds 20% of the max durability
-                    long addedLong = second.getAmount() * (Math.round(0.25 * max) + Math.round(max * 0.25 * (getValue(Ability.REPAIRING, playerData) / 100)));
+                    long addedLong = second.getAmount() * (Math.round(0.25 * max) + Math.round(max * 0.25 * (getValue(Ability.REPAIRING, pluginPlayer) / 100)));
                     short added;
                     if (addedLong > Short.MAX_VALUE) {
                         added = (short) damageable.getDamage();
@@ -146,7 +146,7 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
             } else {
                 // For old versions
                 short max = result.getType().getMaxDurability();
-                long addedLong = second.getAmount() * (Math.round(0.25 * max) + Math.round(max * 0.25 * (getValue(Ability.REPAIRING, playerData) / 100)));
+                long addedLong = second.getAmount() * (Math.round(0.25 * max) + Math.round(max * 0.25 * (getValue(Ability.REPAIRING, pluginPlayer) / 100)));
                 short added;
                 if (addedLong > Short.MAX_VALUE) {
                     added = first.getDurability();
@@ -171,10 +171,10 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
             if (event.getPlayer() instanceof Player) {
                 Player player = (Player) event.getPlayer();
                 if (blockAbility(player)) return;
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData == null) return;
-                if (playerData.getAbilityLevel(Ability.ANVIL_MASTER) > 0) {
-                    int maxCost = (int) Math.round(getValue(Ability.ANVIL_MASTER, playerData));
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer == null) return;
+                if (pluginPlayer.getAbilityLevel(Ability.ANVIL_MASTER) > 0) {
+                    int maxCost = (int) Math.round(getValue(Ability.ANVIL_MASTER, pluginPlayer));
                     anvil.setMaximumRepairCost(maxCost);
                 }
             }
@@ -188,10 +188,10 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
         if (blockDisabled(Ability.SKILL_MENDER)) return;
         Player player = event.getPlayer();
         if (blockAbility(player)) return;
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        if (playerData.getAbilityLevel(Ability.SKILL_MENDER) == 0) return;
-        if (random.nextDouble() < getValue(Ability.SKILL_MENDER, playerData) / 100) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        if (pluginPlayer.getAbilityLevel(Ability.SKILL_MENDER) == 0) return;
+        if (random.nextDouble() < getValue(Ability.SKILL_MENDER, pluginPlayer) / 100) {
             // Get all the items that have mending
             List<ItemStack> mendingItems = new ArrayList<>();
             for (ItemStack item : player.getInventory().getArmorContents()) {
@@ -271,9 +271,9 @@ public class ForgingAbilities extends AbilityProvider implements Listener {
         for (HumanEntity entity : viewers) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                if (playerData != null) {
-                    int level = playerData.getSkillLevel(Skills.FORGING);
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                if (pluginPlayer != null) {
+                    int level = pluginPlayer.getSkillLevel(Skills.FORGING);
                     if (level > highestLevel) {
                         highestLevel = level;
                         highestPlayer = player;

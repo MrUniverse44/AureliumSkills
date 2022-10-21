@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.modifier.StatModifier;
@@ -33,16 +33,16 @@ public class ModifierCommand extends BaseCommand {
     @Description("Adds a stat modifier to a player.")
     public void onAdd(CommandSender sender, @Flags("other") Player player, Stat stat, String name, double value, @Default("false") boolean silent, @Default("false") boolean stack) {
         Locale locale = plugin.getLang().getLocale(sender);
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             StatModifier modifier = new StatModifier(name, stat, value);
-            if (!playerData.getStatModifiers().containsKey(name)) {
-                playerData.addStatModifier(modifier);
+            if (!pluginPlayer.getStatModifiers().containsKey(name)) {
+                pluginPlayer.addStatModifier(modifier);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_ADD_ADDED, locale), modifier, player, locale));
                 }
             } else if (stack) { // Stack modifier by using a numbered name
-                Set<String> modifierNames = playerData.getStatModifiers().keySet();
+                Set<String> modifierNames = pluginPlayer.getStatModifiers().keySet();
                 int lastStackNumber = 1;
                 for (String modifierName : modifierNames) { // Find the previous highest stack number
                     if (modifierName.startsWith(name)) {
@@ -60,7 +60,7 @@ public class ModifierCommand extends BaseCommand {
 
                 String newModifierName = name + "(" + newStackNumber + ")";
                 StatModifier newModifier = new StatModifier(newModifierName, stat, value);
-                playerData.addStatModifier(newModifier);
+                pluginPlayer.addStatModifier(newModifier);
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_ADD_ADDED, locale), newModifier, player, locale));
                 }
@@ -82,9 +82,9 @@ public class ModifierCommand extends BaseCommand {
     @Description("Removes a specific stat modifier from a player.")
     public void onRemove(CommandSender sender, @Flags("other") Player player, String name, @Default("false") boolean silent) {
         Locale locale = plugin.getLang().getLocale(sender);
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
-            if (playerData.removeStatModifier(name)) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
+            if (pluginPlayer.removeStatModifier(name)) {
                 if (!silent) {
                     sender.sendMessage(AureliumSkills.getPrefix(locale) + StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_REMOVE_REMOVED, locale), name, player));
                 }
@@ -123,19 +123,19 @@ public class ModifierCommand extends BaseCommand {
     }
 
     private void listModifiers(CommandSender sender, @Optional @Flags("other") Player player, @Optional Stat stat, Locale locale) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             StringBuilder message;
             if (stat == null) {
                 message = new StringBuilder(StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_LIST_ALL_STATS_HEADER, locale), player));
-                for (String key : playerData.getStatModifiers().keySet()) {
-                    StatModifier modifier = playerData.getStatModifiers().get(key);
+                for (String key : pluginPlayer.getStatModifiers().keySet()) {
+                    StatModifier modifier = pluginPlayer.getStatModifiers().get(key);
                     message.append("\n").append(StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_LIST_ALL_STATS_ENTRY, locale), modifier, player, locale));
                 }
             } else {
                 message = new StringBuilder(StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_LIST_ONE_STAT_HEADER, locale), stat, player, locale));
-                for (String key : playerData.getStatModifiers().keySet()) {
-                    StatModifier modifier = playerData.getStatModifiers().get(key);
+                for (String key : pluginPlayer.getStatModifiers().keySet()) {
+                    StatModifier modifier = pluginPlayer.getStatModifiers().get(key);
                     if (modifier.getStat() == stat) {
                         message.append("\n").append(StatModifier.applyPlaceholders(Lang.getMessage(CommandMessage.MODIFIER_LIST_ONE_STAT_ENTRY, locale), modifier, player, locale));
                     }
@@ -156,8 +156,8 @@ public class ModifierCommand extends BaseCommand {
         if (player == null) {
             if (sender instanceof Player) {
                 Player target = (Player) sender;
-                PlayerData playerData = plugin.getPlayerManager().getPlayerData(target);
-                removeAllModifiers(sender, stat, silent, locale, target, playerData);
+                PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(target);
+                removeAllModifiers(sender, stat, silent, locale, target, pluginPlayer);
             }
             else {
                 if (!silent) {
@@ -166,27 +166,27 @@ public class ModifierCommand extends BaseCommand {
             }
         }
         else {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            removeAllModifiers(sender, stat, silent, locale, player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            removeAllModifiers(sender, stat, silent, locale, player, pluginPlayer);
         }
     }
 
-    private void removeAllModifiers(CommandSender sender, @Optional Stat stat, @Default("false") boolean silent, Locale locale, Player target, PlayerData playerData) {
-        if (playerData != null) {
+    private void removeAllModifiers(CommandSender sender, @Optional Stat stat, @Default("false") boolean silent, Locale locale, Player target, PluginPlayer pluginPlayer) {
+        if (pluginPlayer != null) {
             int removed = 0;
             List<String> toRemove = new ArrayList<>();
-            for (String key : playerData.getStatModifiers().keySet()) {
+            for (String key : pluginPlayer.getStatModifiers().keySet()) {
                 if (stat == null) {
                     toRemove.add(key);
                     removed++;
                 }
-                else if (playerData.getStatModifiers().get(key).getStat() == stat) {
+                else if (pluginPlayer.getStatModifiers().get(key).getStat() == stat) {
                     toRemove.add(key);
                     removed++;
                 }
             }
             for (String key : toRemove) {
-                playerData.removeStatModifier(key);
+                pluginPlayer.removeStatModifier(key);
             }
             if (!silent) {
                 if (stat == null) {

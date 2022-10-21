@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.menus.sources;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CustomMessageKey;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
@@ -152,13 +152,13 @@ public class SourceItem extends AbstractItem implements TemplateItemProvider<Sou
 
     private double getMultiplier(Player player, Skill skill) {
         Ability ability = skill.getXpMultiplierAbility();
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) {
             return 1.0;
         }
         double multiplier = 1.0;
-        if (playerData.getAbilityLevel(ability) > 0) {
-            double abilityValue = plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability));
+        if (pluginPlayer.getAbilityLevel(ability) > 0) {
+            double abilityValue = plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability));
             double addedMultiplier = abilityValue / 100;
             multiplier += addedMultiplier;
         }

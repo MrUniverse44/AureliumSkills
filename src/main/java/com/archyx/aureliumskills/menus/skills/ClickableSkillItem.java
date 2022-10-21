@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.menus.skills;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.menus.common.AbstractSkillItem;
 import com.archyx.aureliumskills.menus.levelprogression.LevelProgressionOpener;
 import com.archyx.aureliumskills.skills.Skill;
@@ -24,13 +24,13 @@ public class ClickableSkillItem extends AbstractSkillItem {
 
     @Override
     public void onClick(Player player, InventoryClickEvent event, ItemStack item, SlotPos pos, ActiveMenu activeMenu, Skill skill) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) {
             return;
         }
 
         if (player.hasPermission("aureliumskills." + skill.toString().toLowerCase(Locale.ENGLISH))) {
-            new LevelProgressionOpener(plugin).open(player, playerData, skill);
+            new LevelProgressionOpener(plugin).open(player, pluginPlayer, skill);
         }
     }
 

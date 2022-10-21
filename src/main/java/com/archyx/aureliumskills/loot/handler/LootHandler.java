@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.CustomMessageKey;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.skills.Skill;
@@ -139,8 +139,8 @@ public abstract class LootHandler extends AbilityProvider {
     }
 
     private void giveXp(Player player, Loot loot, @Nullable Source source) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
         double xp = loot.getOption("xp", Double.class, -1.0);
         if (xp == -1.0 && source != null) {
             plugin.getLeveler().addXp(player, skill, getXp(player, source, ability));
@@ -150,13 +150,13 @@ public abstract class LootHandler extends AbilityProvider {
     }
 
     private double getXp(Player player, double input) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             double output = input;
             if (ability != null) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
                     double modifier = 1;
-                    modifier += plugin.getAbilityManager().getValue(ability, playerData.getAbilityLevel(ability)) / 100;
+                    modifier += plugin.getAbilityManager().getValue(ability, pluginPlayer.getAbilityLevel(ability)) / 100;
                     output *= modifier;
                 }
             }
@@ -172,10 +172,10 @@ public abstract class LootHandler extends AbilityProvider {
     private void attemptSendMessage(Player player, Loot loot) {
         String message = loot.getMessage();
         if (message != null && !message.equals("")) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData == null) return;
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer == null) return;
 
-            Locale locale = playerData.getLocale();
+            Locale locale = pluginPlayer.getLocale();
             // Try to get message as message key
             CustomMessageKey key = new CustomMessageKey(message);
             String finalMessage = Lang.getMessage(key, locale);
@@ -191,9 +191,9 @@ public abstract class LootHandler extends AbilityProvider {
         }
     }
 
-    protected double getCommonChance(LootPool pool, PlayerData playerData) {
+    protected double getCommonChance(LootPool pool, PluginPlayer pluginPlayer) {
         double chancePerLuck = pool.getOption("chance_per_luck", Double.class, 0.0) / 100;
-        return pool.getBaseChance() + chancePerLuck * playerData.getStatLevel(Stats.LUCK);
+        return pool.getBaseChance() + chancePerLuck * pluginPlayer.getStatLevel(Stats.LUCK);
     }
 
 }

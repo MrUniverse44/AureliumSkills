@@ -5,7 +5,7 @@ import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.api.event.PlayerLootDropEvent;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.support.WorldGuardFlags;
 import com.cryptomorin.xseries.XMaterial;
@@ -69,9 +69,9 @@ public class Luck implements Listener {
 			if (plugin.getWorldManager().isInDisabledWorld(player.getLocation())) {
 				return;
 			}
-			PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-			if (playerData != null) {
-				double luck = playerData.getStatLevel(Stats.LUCK) * OptionL.getDouble(Option.LUCK_MODIFIER);
+			PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+			if (pluginPlayer != null) {
+				double luck = pluginPlayer.getStatLevel(Stats.LUCK) * OptionL.getDouble(Option.LUCK_MODIFIER);
 				attribute.addModifier(new AttributeModifier("AureliumSkills-Luck", luck, AttributeModifier.Operation.ADD_NUMBER));
 			}
 		}
@@ -102,14 +102,14 @@ public class Luck implements Listener {
 			}
 			if (player.getGameMode().equals(GameMode.SURVIVAL)) {
 				if (plugin.getRegionManager().isPlacedBlock(block)) return;
-				PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-				if (playerData == null) return;
+				PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+				if (pluginPlayer == null) return;
 				Material mat = block.getType();
 				if (mat.equals(Material.STONE) || mat.equals(Material.COBBLESTONE) || mat.equals(Material.SAND) || mat.equals(Material.GRAVEL)
 						|| mat.equals(Material.DIRT) || mat.equals(XMaterial.GRASS_BLOCK.parseMaterial()) || mat.equals(XMaterial.ANDESITE.parseMaterial())
 						|| mat.equals(XMaterial.DIORITE.parseMaterial()) || mat.equals(XMaterial.GRANITE.parseMaterial())) {
 					//Calculate chance
-					double chance = playerData.getStatLevel(Stats.LUCK) * OptionL.getDouble(Option.LUCK_DOUBLE_DROP_MODIFIER);
+					double chance = pluginPlayer.getStatLevel(Stats.LUCK) * OptionL.getDouble(Option.LUCK_DOUBLE_DROP_MODIFIER);
 					if (chance * 100 > OptionL.getDouble(Option.LUCK_DOUBLE_DROP_PERCENT_MAX)) {
 						chance = OptionL.getDouble(Option.LUCK_DOUBLE_DROP_PERCENT_MAX);
 					}

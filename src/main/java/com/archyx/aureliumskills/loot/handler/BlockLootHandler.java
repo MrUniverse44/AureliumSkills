@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.source.Source;
 import com.archyx.aureliumskills.support.WorldGuardFlags;
@@ -33,7 +33,7 @@ public abstract class BlockLootHandler extends LootHandler implements Listener {
 
     public abstract Source getSource(Block block);
 
-    public abstract double getChance(LootPool pool, PlayerData playerData);
+    public abstract double getChance(LootPool pool, PluginPlayer pluginPlayer);
 
     public abstract LootDropCause getCause(LootPool pool);
 
@@ -58,8 +58,8 @@ public abstract class BlockLootHandler extends LootHandler implements Listener {
             }
         }
 
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
 
         Source originalSource = getSource(block);
 
@@ -67,7 +67,7 @@ public abstract class BlockLootHandler extends LootHandler implements Listener {
         if (table == null) return;
         for (LootPool pool : table.getPools()) {
             // Calculate chance for pool
-            double chance = getChance(pool, playerData);
+            double chance = getChance(pool, pluginPlayer);
             LootDropCause cause = getCause(pool);
 
             // Select pool and give loot

@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.api.event.LootDropCause;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.loot.handler.LootHandler;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.source.Source;
@@ -55,8 +55,8 @@ public class FishingLootHandler extends LootHandler implements Listener {
         if (!event.getState().equals(PlayerFishEvent.State.CAUGHT_FISH)) return;
         if (event.getExpToDrop() == 0) return;
 
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
 
         ItemStack originalItem = ((Item) event.getCaught()).getItemStack();
         FishingSource originalSource = FishingSource.valueOf(originalItem);
@@ -70,14 +70,14 @@ public class FishingLootHandler extends LootHandler implements Listener {
             }
             // Calculate chance for pool
             Source source;
-            double chance = getCommonChance(pool, playerData);
+            double chance = getCommonChance(pool, pluginPlayer);
             LootDropCause cause = LootDropCause.FISHING_OTHER_LOOT;
             if (pool.getName().equals("rare") && plugin.getAbilityManager().isEnabled(Ability.TREASURE_HUNTER)) {
-                chance += (getValue(Ability.TREASURE_HUNTER, playerData) / 100);
+                chance += (getValue(Ability.TREASURE_HUNTER, pluginPlayer) / 100);
                 source = FishingSource.RARE;
                 cause = LootDropCause.TREASURE_HUNTER;
             } else if (pool.getName().equals("epic") && plugin.getAbilityManager().isEnabled(Ability.EPIC_CATCH)) {
-                chance += (getValue(Ability.EPIC_CATCH, playerData) / 100);
+                chance += (getValue(Ability.EPIC_CATCH, pluginPlayer) / 100);
                 source = FishingSource.EPIC;
                 cause = LootDropCause.EPIC_CATCH;
             } else {

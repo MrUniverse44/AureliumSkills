@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.data.storage;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.data.PlayerDataState;
 import com.archyx.aureliumskills.data.PlayerManager;
@@ -38,23 +38,23 @@ public abstract class StorageProvider {
         this.plugin = plugin;
     }
 
-    public PlayerData createNewPlayer(Player player) {
-        PlayerData playerData = new PlayerData(player, plugin);
+    public PluginPlayer createNewPlayer(Player player) {
+        PluginPlayer pluginPlayer = new PluginPlayer(player, plugin);
         // Set all skills to level 1 for new players
         for (Skill skill : plugin.getSkillRegistry().getSkills()) {
-            playerData.setSkillLevel(skill, 1);
-            playerData.setSkillXp(skill, 0.0);
+            pluginPlayer.setSkillLevel(skill, 1);
+            pluginPlayer.setSkillXp(skill, 0.0);
         }
-        playerManager.addPlayerData(playerData);
+        playerManager.addPlayerData(pluginPlayer);
         plugin.getLeveler().updatePermissions(player);
-        PlayerDataLoadEvent event = new PlayerDataLoadEvent(playerData);
+        PlayerDataLoadEvent event = new PlayerDataLoadEvent(pluginPlayer);
         new BukkitRunnable() {
             @Override
             public void run() {
                 Bukkit.getPluginManager().callEvent(event);
             }
         }.runTask(plugin);
-        return playerData;
+        return pluginPlayer;
     }
 
     protected void sendErrorMessageToPlayer(Player player, Exception e) {
@@ -63,24 +63,24 @@ public abstract class StorageProvider {
                 ", your skill data will not be saved. Try relogging to attempt loading again.");
     }
 
-    protected void applyData(PlayerData playerData, Map<Skill, Integer> levels, Map<Skill, Double> xpLevels) {
+    protected void applyData(PluginPlayer pluginPlayer, Map<Skill, Integer> levels, Map<Skill, Double> xpLevels) {
         for (Stat stat : plugin.getStatRegistry().getStats()) {
-            playerData.setStatLevel(stat, 0);
+            pluginPlayer.setStatLevel(stat, 0);
         }
         // Apply to object if in memory
         for (Skill skill : Skills.values()) {
             int level = levels.get(skill);
-            playerData.setSkillLevel(skill, level);
-            playerData.setSkillXp(skill, xpLevels.get(skill));
+            pluginPlayer.setSkillLevel(skill, level);
+            pluginPlayer.setSkillXp(skill, xpLevels.get(skill));
             // Add stat levels
-            plugin.getRewardManager().getRewardTable(skill).applyStats(playerData, level);
+            plugin.getRewardManager().getRewardTable(skill).applyStats(pluginPlayer, level);
         }
         // Reload stats
-        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.HEALTH);
-        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.LUCK);
-        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.WISDOM);
+        new StatLeveler(plugin).reloadStat(pluginPlayer.getBukkitPlayer(), Stats.HEALTH);
+        new StatLeveler(plugin).reloadStat(pluginPlayer.getBukkitPlayer(), Stats.LUCK);
+        new StatLeveler(plugin).reloadStat(pluginPlayer.getBukkitPlayer(), Stats.WISDOM);
         // Immediately save to file
-        save(playerData.getBukkitPlayer(), false);
+        save(pluginPlayer.getBukkitPlayer(), false);
     }
 
     protected Map<Skill, Integer> getLevelsFromBackup(ConfigurationSection playerDataSection, String stringId) {
@@ -103,14 +103,14 @@ public abstract class StorageProvider {
 
     protected Set<UUID> addLoadedPlayersToLeaderboards(Map<Skill, List<SkillValue>> leaderboards, List<SkillValue> powerLeaderboard, List<SkillValue> averageLeaderboard) {
         Set<UUID> loadedFromMemory = new HashSet<>();
-        for (PlayerData playerData : playerManager.getPlayerDataMap().values()) {
-            UUID id = playerData.getBukkitPlayer().getUniqueId();
+        for (PluginPlayer pluginPlayer : playerManager.getPlayerDataMap().values()) {
+            UUID id = pluginPlayer.getBukkitPlayer().getUniqueId();
             int powerLevel = 0;
             double powerXp = 0;
             int numEnabled = 0;
             for (Skill skill : Skills.values()) {
-                int level = playerData.getSkillLevel(skill);
-                double xp = playerData.getSkillXp(skill);
+                int level = pluginPlayer.getSkillLevel(skill);
+                double xp = pluginPlayer.getSkillXp(skill);
                 // Add to lists
                 SkillValue skillLevel = new SkillValue(id, level, xp);
                 leaderboards.get(skill).add(skillLevel);
@@ -128,7 +128,7 @@ public abstract class StorageProvider {
             SkillValue averageValue = new SkillValue(id, 0, averageLevel);
             averageLeaderboard.add(averageValue);
 
-            loadedFromMemory.add(playerData.getBukkitPlayer().getUniqueId());
+            loadedFromMemory.add(pluginPlayer.getBukkitPlayer().getUniqueId());
         }
         return loadedFromMemory;
     }

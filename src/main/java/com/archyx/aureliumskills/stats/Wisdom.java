@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.stats;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,14 +28,14 @@ public class Wisdom implements Listener {
 		if (plugin.getWorldManager().isInDisabledWorld(player.getLocation())) {
 			return;
 		}
-		PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-		if (playerData == null) return;
-		event.setAmount((int) (event.getAmount() * (1 + (playerData.getStatLevel(Stats.WISDOM) * OptionL.getDouble(Option.WISDOM_EXPERIENCE_MODIFIER)))));
+		PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+		if (pluginPlayer == null) return;
+		event.setAmount((int) (event.getAmount() * (1 + (pluginPlayer.getStatLevel(Stats.WISDOM) * OptionL.getDouble(Option.WISDOM_EXPERIENCE_MODIFIER)))));
 	}
 	
 	@EventHandler
 	public void onAnvilPrepare(PrepareAnvilEvent event) {
-		PlayerData playerData = null;
+		PluginPlayer pluginPlayer = null;
 		//Finds the viewer with the highest wisdom level
 		for (HumanEntity entity : event.getViewers()) {
 			if (entity instanceof Player) {
@@ -44,19 +44,19 @@ public class Wisdom implements Listener {
 				if (plugin.getWorldManager().isInDisabledWorld(player.getLocation())) {
 					return;
 				}
-				PlayerData checkedPlayerData = plugin.getPlayerManager().getPlayerData(player);
-				if (checkedPlayerData != null) {
-					if (playerData == null) {
-						playerData = checkedPlayerData;
-					} else if (playerData.getStatLevel(Stats.WISDOM) < checkedPlayerData.getStatLevel(Stats.WISDOM)) {
-						playerData = checkedPlayerData;
+				PluginPlayer checkedPluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+				if (checkedPluginPlayer != null) {
+					if (pluginPlayer == null) {
+						pluginPlayer = checkedPluginPlayer;
+					} else if (pluginPlayer.getStatLevel(Stats.WISDOM) < checkedPluginPlayer.getStatLevel(Stats.WISDOM)) {
+						pluginPlayer = checkedPluginPlayer;
 					}
 				}
 			}
 		}
-		if (playerData != null) {
+		if (pluginPlayer != null) {
 			AnvilInventory anvil = event.getInventory();
-			double wisdom = playerData.getStatLevel(Stats.WISDOM) * OptionL.getDouble(Option.WISDOM_ANVIL_COST_MODIFIER);
+			double wisdom = pluginPlayer.getStatLevel(Stats.WISDOM) * OptionL.getDouble(Option.WISDOM_ANVIL_COST_MODIFIER);
 			int cost = (int) Math.round(anvil.getRepairCost() * (1 - (-1.0 * Math.pow(1.025, -1.0 * wisdom) + 1)));
 			if (cost > 0) {
 				anvil.setRepairCost(cost);

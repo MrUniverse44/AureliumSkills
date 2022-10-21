@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataState;
 import com.archyx.aureliumskills.lang.CommandMessage;
 import com.archyx.aureliumskills.lang.Lang;
@@ -52,12 +52,12 @@ public class ProfileCommand extends BaseCommand {
         }
         UUID uuid = offlinePlayer.getUniqueId();
         if (offlinePlayer.isOnline()) { // Online players
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(uuid);
-            if (playerData == null) {
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(uuid);
+            if (pluginPlayer == null) {
                 sender.sendMessage(manager.formatMessage(manager.getCommandIssuer(sender), MessageType.ERROR, MinecraftMessageKeys.NO_PLAYER_FOUND, "{search}", player));
                 return;
             }
-            sendSkillsMessage(sender, player, uuid, playerData.getSkillLevelMap(), playerData.getSkillXpMap());
+            sendSkillsMessage(sender, player, uuid, pluginPlayer.getSkillLevelMap(), pluginPlayer.getSkillXpMap());
         } else { // Offline players
             new BukkitRunnable() {
                 @Override
@@ -91,12 +91,12 @@ public class ProfileCommand extends BaseCommand {
         }
         UUID uuid = offlinePlayer.getUniqueId();
         if (offlinePlayer.isOnline()) { // Online players
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(uuid);
-            if (playerData == null) {
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(uuid);
+            if (pluginPlayer == null) {
                 sender.sendMessage(manager.formatMessage(manager.getCommandIssuer(sender), MessageType.ERROR, MinecraftMessageKeys.NO_PLAYER_FOUND, "{search}", player));
                 return;
             }
-            sendStatsMessage(sender, player, uuid, playerData.getSkillLevelMap(), playerData.getStatModifiers());
+            sendStatsMessage(sender, player, uuid, pluginPlayer.getSkillLevelMap(), pluginPlayer.getStatModifiers());
         } else { // Offline players
             new BukkitRunnable() {
                 @Override

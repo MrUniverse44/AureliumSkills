@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.menus.stats;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.menus.common.AbstractItem;
@@ -30,8 +30,8 @@ public class SkullItem extends AbstractItem implements SingleItemProvider {
         if (placeholder.equals("player")) {
             return player.getName();
         }
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             // Handle each stat entry
             Stat stat = plugin.getStatRegistry().getStat(placeholder);
             if (stat != null) {
@@ -39,7 +39,7 @@ public class SkullItem extends AbstractItem implements SingleItemProvider {
                         "{color}", stat.getColor(locale),
                         "{symbol}", stat.getSymbol(locale),
                         "{stat}", stat.getDisplayName(locale),
-                        "{level}", NumberUtil.format1(playerData.getStatLevel(stat)));
+                        "{level}", NumberUtil.format1(pluginPlayer.getStatLevel(stat)));
             }
         }
         return placeholder;

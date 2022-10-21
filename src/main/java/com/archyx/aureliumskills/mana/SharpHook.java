@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.mana;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.skills.Skills;
@@ -32,7 +32,7 @@ public class SharpHook extends ManaAbilityProvider {
     }
 
     @Override
-    public void onActivate(Player player, PlayerData playerData) {
+    public void onActivate(Player player, PluginPlayer pluginPlayer) {
         if (plugin.getManaAbilityManager().getOptionAsBooleanElseTrue(MAbility.SHARP_HOOK, "enable_sound")) {
             if (XMaterial.isNewVersion()) {
                 player.playSound(player.getLocation(), Sound.ENTITY_FISHING_BOBBER_RETRIEVE, 1f, 1.5f);
@@ -43,7 +43,7 @@ public class SharpHook extends ManaAbilityProvider {
     }
 
     @Override
-    public void onStop(Player player, PlayerData playerData) {
+    public void onStop(Player player, PluginPlayer pluginPlayer) {
 
     }
 
@@ -57,11 +57,11 @@ public class SharpHook extends ManaAbilityProvider {
 
         Player player = event.getPlayer();
         if (blockAbility(player)) return;
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) {
             return;
         }
-        if (playerData.getManaAbilityLevel(MAbility.SHARP_HOOK) <= 0) {
+        if (pluginPlayer.getManaAbilityLevel(MAbility.SHARP_HOOK) <= 0) {
             return;
         }
         // Check for player just casting rod
@@ -90,11 +90,11 @@ public class SharpHook extends ManaAbilityProvider {
                             int cooldown = manager.getPlayerCooldown(player.getUniqueId(), MAbility.SHARP_HOOK);
                             if (cooldown == 0) {
                                 if (areValidLocations(player, livingEntity)) { // Check that the locations of the entities are valid
-                                    activateSharpHook(player, playerData, livingEntity);
+                                    activateSharpHook(player, pluginPlayer, livingEntity);
                                 }
                             } else {
                                 if (manager.getErrorTimer(player.getUniqueId(), MAbility.SHARP_HOOK) == 0) {
-                                    Locale locale = playerData.getLocale();
+                                    Locale locale = pluginPlayer.getLocale();
                                     plugin.getAbilityManager().sendMessage(player, TextUtil.replace(Lang.getMessage(ManaAbilityMessage.NOT_READY, locale), "{cooldown}", NumberUtil.format1((double) (cooldown) / 20)));
                                     manager.setErrorTimer(player.getUniqueId(), MAbility.SHARP_HOOK, 2);
                                 }
@@ -108,9 +108,9 @@ public class SharpHook extends ManaAbilityProvider {
         }
     }
 
-    private void activateSharpHook(Player player, PlayerData playerData, LivingEntity caught) {
+    private void activateSharpHook(Player player, PluginPlayer pluginPlayer, LivingEntity caught) {
         if (hasEnoughMana(player)) {
-            double damage = plugin.getManaAbilityManager().getValue(MAbility.SHARP_HOOK, playerData);
+            double damage = plugin.getManaAbilityManager().getValue(MAbility.SHARP_HOOK, pluginPlayer);
             double healthBefore = caught.getHealth();
             caught.damage(damage, player);
             double healthAfter = caught.getHealth();
@@ -136,7 +136,7 @@ public class SharpHook extends ManaAbilityProvider {
     }
 
     @Override
-    protected int getDuration(PlayerData playerData) {
+    protected int getDuration(PluginPlayer pluginPlayer) {
         return 0;
     }
 }

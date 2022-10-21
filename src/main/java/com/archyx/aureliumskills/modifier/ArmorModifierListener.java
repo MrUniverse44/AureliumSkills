@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.modifier;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.requirement.Requirements;
 import com.archyx.aureliumskills.stats.Stat;
@@ -46,7 +46,7 @@ public class ArmorModifierListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerDataLoadEvent event) {
         Player player = event.getPlayerData().getBukkitPlayer();
-        PlayerData playerData = event.getPlayerData();
+        PluginPlayer pluginPlayer = event.getPlayerData();
         for (ItemStack armor : player.getInventory().getArmorContents()) {
             if (armor != null) {
                 if (OptionL.getBoolean(Option.MODIFIER_ARMOR_TIMER_ENABLED)) {
@@ -55,10 +55,10 @@ public class ArmorModifierListener implements Listener {
                 if (!armor.getType().equals(Material.AIR)) {
                     if (requirements.meetsRequirements(ModifierType.ARMOR, armor, player)) {
                         for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, armor)) {
-                            playerData.addStatModifier(modifier, false);
+                            pluginPlayer.addStatModifier(modifier, false);
                         }
                         for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, armor)) {
-                            playerData.addMultiplier(multiplier);
+                            pluginPlayer.addMultiplier(multiplier);
                         }
                     }
                 }
@@ -70,17 +70,17 @@ public class ArmorModifierListener implements Listener {
     public void onEquip(ArmorEquipEvent event) {
         if (OptionL.getBoolean(Option.MODIFIER_ARMOR_TIMER_ENABLED)) return; // Don't use if timer is enabled
         Player player = event.getPlayer();
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData != null) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer != null) {
             // Equip
             if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
                 ItemStack item = event.getNewArmorPiece();
                 if (requirements.meetsRequirements(ModifierType.ARMOR, item, player)) {
                     for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, item)) {
-                        playerData.addStatModifier(modifier);
+                        pluginPlayer.addStatModifier(modifier);
                     }
                     for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, item)) {
-                        playerData.addMultiplier(multiplier);
+                        pluginPlayer.addMultiplier(multiplier);
                     }
                 }
             }
@@ -88,10 +88,10 @@ public class ArmorModifierListener implements Listener {
             if (event.getOldArmorPiece() != null && event.getOldArmorPiece().getType() != Material.AIR) {
                 ItemStack item = event.getOldArmorPiece();
                 for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, item)) {
-                    playerData.removeStatModifier(modifier.getName());
+                    pluginPlayer.removeStatModifier(modifier.getName());
                 }
                 for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, item)) {
-                    playerData.removeMultiplier(multiplier.getName());
+                    pluginPlayer.removeMultiplier(multiplier.getName());
                 }
             }
         }
@@ -120,29 +120,29 @@ public class ArmorModifierListener implements Listener {
                         Set<Stat> statsToReload = new HashSet<>();
                         // Remove modifiers and multipliers that are on stored item from player
                         if (remove && stored.getType() != Material.AIR) {
-                            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                            if (playerData == null) continue;
+                            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                            if (pluginPlayer == null) continue;
 
                             for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, stored)) {
-                                playerData.removeStatModifier(modifier.getName(), false);
+                                pluginPlayer.removeStatModifier(modifier.getName(), false);
                                 statsToReload.add(modifier.getStat());
                             }
                             for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, stored)) {
-                                playerData.removeMultiplier(multiplier.getName());
+                                pluginPlayer.removeMultiplier(multiplier.getName());
                             }
                         }
                         // Add modifiers and multipliers that are on worn item to the player
                         if (wearing != null && wearing.getType() != Material.AIR) {
-                            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                            if (playerData == null) continue;
+                            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                            if (pluginPlayer == null) continue;
 
                             if (requirements.meetsRequirements(ModifierType.ARMOR, wearing, player)) {
                                 for (StatModifier modifier : modifiers.getModifiers(ModifierType.ARMOR, wearing)) {
-                                    playerData.addStatModifier(modifier, false);
+                                    pluginPlayer.addStatModifier(modifier, false);
                                     statsToReload.add(modifier.getStat());
                                 }
                                 for (Multiplier multiplier : multipliers.getMultipliers(ModifierType.ARMOR, wearing)) {
-                                    playerData.addMultiplier(multiplier);
+                                    pluginPlayer.addMultiplier(multiplier);
                                 }
                             }
                         }

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerManager {
 
     private final AureliumSkills plugin;
-    private final ConcurrentHashMap<UUID, PlayerData> playerData;
+    private final ConcurrentHashMap<UUID, PluginPlayer> playerData;
 
     public PlayerManager(AureliumSkills plugin) {
         this.plugin = plugin;
@@ -26,17 +26,17 @@ public class PlayerManager {
     }
 
     @Nullable
-    public PlayerData getPlayerData(Player player) {
+    public PluginPlayer getPlayerData(Player player) {
         return playerData.get(player.getUniqueId());
     }
 
     @Nullable
-    public PlayerData getPlayerData(UUID id) {
+    public PluginPlayer getPlayerData(UUID id) {
         return this.playerData.get(id);
     }
 
-    public void addPlayerData(@NotNull PlayerData playerData) {
-        this.playerData.put(playerData.getUniqueId(), playerData);
+    public void addPlayerData(@NotNull PluginPlayer pluginPlayer) {
+        this.playerData.put(pluginPlayer.getUniqueId(), pluginPlayer);
     }
 
     public void removePlayerData(UUID id) {
@@ -47,7 +47,7 @@ public class PlayerManager {
         return playerData.containsKey(player.getUniqueId());
     }
 
-    public ConcurrentHashMap<UUID, PlayerData> getPlayerDataMap() {
+    public ConcurrentHashMap<UUID, PluginPlayer> getPlayerDataMap() {
         return playerData;
     }
 
@@ -57,8 +57,8 @@ public class PlayerManager {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData != null && !playerData.isSaving()) {
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer != null && !pluginPlayer.isSaving()) {
                         plugin.getStorageProvider().save(player, false);
                     }
                 }

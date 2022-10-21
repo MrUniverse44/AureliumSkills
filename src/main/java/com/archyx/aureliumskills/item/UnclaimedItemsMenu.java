@@ -1,7 +1,7 @@
 package com.archyx.aureliumskills.item;
 
 import com.archyx.aureliumskills.AureliumSkills;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.MenuMessage;
 import com.archyx.aureliumskills.util.item.ItemUtils;
@@ -21,11 +21,11 @@ import java.util.List;
 public class UnclaimedItemsMenu implements InventoryProvider {
 
     private final AureliumSkills plugin;
-    private final PlayerData playerData;
+    private final PluginPlayer pluginPlayer;
 
-    public UnclaimedItemsMenu(AureliumSkills plugin, PlayerData playerData) {
+    public UnclaimedItemsMenu(AureliumSkills plugin, PluginPlayer pluginPlayer) {
         this.plugin = plugin;
-        this.playerData = playerData;
+        this.pluginPlayer = pluginPlayer;
     }
 
     @Override
@@ -33,10 +33,10 @@ public class UnclaimedItemsMenu implements InventoryProvider {
         for (int slot = 0; slot < 54; slot++) {
             int row = slot / 9;
             int column = slot % 9;
-            if (playerData.getUnclaimedItems().size() <= slot) { // Empty slot
+            if (pluginPlayer.getUnclaimedItems().size() <= slot) { // Empty slot
                 contents.set(row, column, ClickableItem.empty(new ItemStack(Material.AIR)));
             } else { // Slot with item
-                KeyIntPair keyIntPair = playerData.getUnclaimedItems().get(slot);
+                KeyIntPair keyIntPair = pluginPlayer.getUnclaimedItems().get(slot);
 
                 String itemKey = keyIntPair.getKey();
                 int amount = keyIntPair.getValue();
@@ -50,8 +50,8 @@ public class UnclaimedItemsMenu implements InventoryProvider {
                     // Give item on click
                     ItemStack leftoverItem = ItemUtils.addItemToInventory(player, item);
                     if (leftoverItem == null) { // All items were added
-                        playerData.getUnclaimedItems().remove(keyIntPair);
-                        if (playerData.getUnclaimedItems().size() > 0) {
+                        pluginPlayer.getUnclaimedItems().remove(keyIntPair);
+                        if (pluginPlayer.getUnclaimedItems().size() > 0) {
                             init(player, contents);
                         } else {
                             player.closeInventory();
@@ -60,7 +60,7 @@ public class UnclaimedItemsMenu implements InventoryProvider {
                         keyIntPair.setValue(leftoverItem.getAmount());
                         init(player, contents);
                     } else { // All items could not fit
-                        player.sendMessage(Lang.getMessage(MenuMessage.INVENTORY_FULL, playerData.getLocale()));
+                        player.sendMessage(Lang.getMessage(MenuMessage.INVENTORY_FULL, pluginPlayer.getLocale()));
                         player.closeInventory();
                     }
                 }));
@@ -68,12 +68,12 @@ public class UnclaimedItemsMenu implements InventoryProvider {
         }
     }
 
-    public static SmartInventory getInventory(AureliumSkills plugin, PlayerData playerData) {
+    public static SmartInventory getInventory(AureliumSkills plugin, PluginPlayer pluginPlayer) {
         return SmartInventory.builder()
                 .manager(plugin.getInventoryManager())
-                .provider(new UnclaimedItemsMenu(plugin, playerData))
+                .provider(new UnclaimedItemsMenu(plugin, pluginPlayer))
                 .size(6, 9)
-                .title(Lang.getMessage(MenuMessage.UNCLAIMED_ITEMS_TITLE, playerData.getLocale()))
+                .title(Lang.getMessage(MenuMessage.UNCLAIMED_ITEMS_TITLE, pluginPlayer.getLocale()))
                 .build();
     }
 
@@ -87,7 +87,7 @@ public class UnclaimedItemsMenu implements InventoryProvider {
             } else {
                 lore.add(" ");
             }
-            lore.add(Lang.getMessage(MenuMessage.CLICK_TO_CLAIM, playerData.getLocale()));
+            lore.add(Lang.getMessage(MenuMessage.CLICK_TO_CLAIM, pluginPlayer.getLocale()));
             meta.setLore(lore);
         }
         displayItem.setItemMeta(meta);

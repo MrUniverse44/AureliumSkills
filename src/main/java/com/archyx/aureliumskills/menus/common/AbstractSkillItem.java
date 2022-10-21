@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.menus.common;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.lang.MenuMessage;
@@ -42,10 +42,10 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
 
     @Override
     public String onPlaceholderReplace(String placeholder, Player player, ActiveMenu activeMenu, PlaceholderData data, Skill skill) {
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return placeholder;
-        Locale locale = playerData.getLocale();
-        int skillLevel = playerData.getSkillLevel(skill);
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return placeholder;
+        Locale locale = pluginPlayer.getLocale();
+        int skillLevel = pluginPlayer.getSkillLevel(skill);
 
         switch (placeholder) {
             case "skill":
@@ -55,9 +55,9 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
             case "stats_leveled":
                 return getStatsLeveled(skill, locale);
             case "ability_levels":
-                return getAbilityLevels(skill, playerData);
+                return getAbilityLevels(skill, pluginPlayer);
             case "mana_ability":
-                return getManaAbility(skill, playerData);
+                return getManaAbility(skill, pluginPlayer);
             case "level":
                 if (data.getType() == PlaceholderType.DISPLAY_NAME) {
                     return RomanNumber.toRoman(skillLevel);
@@ -65,7 +65,7 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
                     return TextUtil.replace(Lang.getMessage(MenuMessage.LEVEL, locale), "{level}", RomanNumber.toRoman(skillLevel));
                 }
             case "progress_to_level":
-                return getProgressToLevel(skill, playerData);
+                return getProgressToLevel(skill, pluginPlayer);
             case "max_level":
                 if (skillLevel >= OptionL.getMaxLevel(skill)) {
                     return Lang.getMessage(MenuMessage.MAX_LEVEL, locale);
@@ -95,8 +95,8 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
         }
     }
 
-    private String getAbilityLevels(Skill skill, PlayerData playerData) {
-        Locale locale = playerData.getLocale();
+    private String getAbilityLevels(Skill skill, PluginPlayer pluginPlayer) {
+        Locale locale = pluginPlayer.getLocale();
         StringBuilder abilityLevelsLore = new StringBuilder();
         if (skill.getAbilities().size() == 5) {
             String levelsMessage = Lang.getMessage(MenuMessage.ABILITY_LEVELS, locale);
@@ -108,11 +108,11 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
             abilities.sort(Comparator.comparingInt(a -> plugin.getAbilityManager().getUnlock(a)));
             for (Ability ability : abilities) {
                 if (plugin.getAbilityManager().isEnabled(ability)) {
-                    if (playerData.getAbilityLevel(ability) > 0) {
-                        int abilityLevel = playerData.getAbilityLevel(ability);
+                    if (pluginPlayer.getAbilityLevel(ability) > 0) {
+                        int abilityLevel = pluginPlayer.getAbilityLevel(ability);
                         levelsMessage = TextUtil.replace(levelsMessage, "{ability_" + num + "}", TextUtil.replace(Lang.getMessage(MenuMessage.ABILITY_LEVEL_ENTRY, locale)
                                 , "{ability}", ability.getDisplayName(locale)
-                                , "{level}", RomanNumber.toRoman(playerData.getAbilityLevel(ability))
+                                , "{level}", RomanNumber.toRoman(pluginPlayer.getAbilityLevel(ability))
                                 , "{info}", TextUtil.replace(ability.getInfo(locale)
                                         , "{value}", NumberUtil.format1(plugin.getAbilityManager().getValue(ability, abilityLevel))
                                         , "{value_2}", NumberUtil.format1(plugin.getAbilityManager().getValue2(ability, abilityLevel)))));
@@ -131,12 +131,12 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
         return abilityLevelsLore.toString();
     }
 
-    private String getManaAbility(Skill skill, PlayerData playerData) {
-        Locale locale = playerData.getLocale();
+    private String getManaAbility(Skill skill, PluginPlayer pluginPlayer) {
+        Locale locale = pluginPlayer.getLocale();
         StringBuilder manaAbilityLore = new StringBuilder();
         MAbility mAbility = skill.getManaAbility();
         if (mAbility != null) {
-            int level = playerData.getManaAbilityLevel(mAbility);
+            int level = pluginPlayer.getManaAbilityLevel(mAbility);
             if (level > 0 && plugin.getAbilityManager().isEnabled(mAbility)) {
                 ManaAbilityManager manager = plugin.getManaAbilityManager();
                 manaAbilityLore.append(TextUtil.replace(Lang.getMessage(getManaAbilityMessage(mAbility), locale)
@@ -175,11 +175,11 @@ public abstract class AbstractSkillItem extends AbstractItem implements Template
         }
     }
 
-    private String getProgressToLevel(Skill skill, PlayerData playerData) {
-        int skillLevel = playerData.getSkillLevel(skill);
-        Locale locale = playerData.getLocale();
+    private String getProgressToLevel(Skill skill, PluginPlayer pluginPlayer) {
+        int skillLevel = pluginPlayer.getSkillLevel(skill);
+        Locale locale = pluginPlayer.getLocale();
         if (skillLevel < OptionL.getMaxLevel(skill)) {
-            double currentXp = playerData.getSkillXp(skill);
+            double currentXp = pluginPlayer.getSkillXp(skill);
             double xpToNext = plugin.getLeveler().getXpRequirements().getXpRequired(skill, skillLevel + 1);
             return TextUtil.replace(Lang.getMessage(MenuMessage.PROGRESS_TO_LEVEL, locale)
                     ,"{level}", RomanNumber.toRoman(skillLevel + 1)

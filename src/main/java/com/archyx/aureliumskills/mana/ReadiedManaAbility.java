@@ -2,7 +2,7 @@ package com.archyx.aureliumskills.mana;
 
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.Lang;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.util.math.NumberUtil;
@@ -86,10 +86,10 @@ public abstract class ReadiedManaAbility extends ManaAbilityProvider {
         if (!isAllowReady(player, event)) {
             return;
         }
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if (playerData == null) return;
-        Locale locale = playerData.getLocale();
-        if (playerData.getManaAbilityLevel(mAbility) <= 0) {
+        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+        if (pluginPlayer == null) return;
+        Locale locale = pluginPlayer.getLocale();
+        if (pluginPlayer.getManaAbilityLevel(mAbility) <= 0) {
             return;
         }
         // Check if already activated

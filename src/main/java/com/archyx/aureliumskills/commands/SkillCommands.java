@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.menus.levelprogression.LevelProgressionOpener;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.skills.Skills;
@@ -25,9 +25,9 @@ public class SkillCommands {
             this.skill = skill;
         }
         
-        protected void openMenu(Player player, PlayerData playerData) {
+        protected void openMenu(Player player, PluginPlayer pluginPlayer) {
             if (OptionL.isEnabled(skill)) {
-                new LevelProgressionOpener(plugin).open(player, playerData, skill);
+                new LevelProgressionOpener(plugin).open(player, pluginPlayer, skill);
             } else {
                 plugin.getCommandManager().formatMessage(plugin.getCommandManager().getCommandIssuer(player), MessageType.ERROR, MessageKeys.UNKNOWN_COMMAND);
             }
@@ -43,9 +43,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -58,9 +58,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -73,9 +73,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -88,9 +88,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -103,9 +103,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -118,9 +118,9 @@ public class SkillCommands {
         
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -133,9 +133,9 @@ public class SkillCommands {
         
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -148,9 +148,9 @@ public class SkillCommands {
         
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -163,9 +163,9 @@ public class SkillCommands {
         
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -178,9 +178,9 @@ public class SkillCommands {
         
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -193,9 +193,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -208,9 +208,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -223,9 +223,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -238,9 +238,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }
@@ -253,9 +253,9 @@ public class SkillCommands {
 
         @Default
         public void onCommand(Player player) {
-            PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-            if (playerData != null) {
-                openMenu(player, playerData);
+            PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+            if (pluginPlayer != null) {
+                openMenu(player, pluginPlayer);
             }
         }
     }

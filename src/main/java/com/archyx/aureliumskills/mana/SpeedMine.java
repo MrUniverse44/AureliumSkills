@@ -3,7 +3,7 @@ package com.archyx.aureliumskills.mana;
 import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.lang.ManaAbilityMessage;
 import com.archyx.aureliumskills.skills.mining.MiningSource;
 import com.archyx.aureliumskills.source.SourceTag;
@@ -26,15 +26,15 @@ public class SpeedMine extends ReadiedManaAbility {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onActivate(Player player, PlayerData playerData) {
+    public void onActivate(Player player, PluginPlayer pluginPlayer) {
         int amplifier = manager.getOptionAsInt(mAbility, "haste_level", 10) - 1;
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (manager.getValue(MAbility.SPEED_MINE, playerData) * 20),
+        player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (manager.getValue(MAbility.SPEED_MINE, pluginPlayer) * 20),
                 amplifier, false, false), true);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
     @Override
-    public void onStop(Player player, PlayerData playerData) {
+    public void onStop(Player player, PluginPlayer pluginPlayer) {
 
     }
 

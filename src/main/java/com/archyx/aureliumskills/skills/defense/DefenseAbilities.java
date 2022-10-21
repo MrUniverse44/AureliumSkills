@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.ability.AbilityProvider;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import com.archyx.aureliumskills.skills.Skills;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
@@ -28,30 +28,30 @@ public class DefenseAbilities extends AbilityProvider implements Listener {
         super(plugin, Skills.DEFENSE);
     }
 
-    public void shielding(EntityDamageByEntityEvent event, PlayerData playerData, Player player) {
+    public void shielding(EntityDamageByEntityEvent event, PluginPlayer pluginPlayer, Player player) {
         if (plugin.getAbilityManager().isEnabled(Ability.SHIELDING)) {
             if (player.isSneaking()) {
-                if (playerData.getAbilityLevel(Ability.SHIELDING) > 0) {
-                    double damageReduction = 1 - (getValue(Ability.SHIELDING, playerData) / 100);
+                if (pluginPlayer.getAbilityLevel(Ability.SHIELDING) > 0) {
+                    double damageReduction = 1 - (getValue(Ability.SHIELDING, pluginPlayer) / 100);
                     event.setDamage(event.getDamage() * damageReduction);
                 }
             }
         }
     }
 
-    public void mobMaster(EntityDamageByEntityEvent event, PlayerData playerData) {
+    public void mobMaster(EntityDamageByEntityEvent event, PluginPlayer pluginPlayer) {
         if (plugin.getAbilityManager().isEnabled(Ability.MOB_MASTER)) {
             if (event.getDamager() instanceof LivingEntity && !(event.getDamager() instanceof Player)) {
-                if (playerData.getAbilityLevel(Ability.MOB_MASTER) > 0) {
-                    double damageReduction = 1 - (getValue(Ability.MOB_MASTER, playerData) / 100);
+                if (pluginPlayer.getAbilityLevel(Ability.MOB_MASTER) > 0) {
+                    double damageReduction = 1 - (getValue(Ability.MOB_MASTER, pluginPlayer) / 100);
                     event.setDamage(event.getDamage() * damageReduction);
                 }
             }
         }
     }
 
-    public void immunity(EntityDamageByEntityEvent event, PlayerData playerData) {
-        double chance = getValue(Ability.IMMUNITY, playerData) / 100;
+    public void immunity(EntityDamageByEntityEvent event, PluginPlayer pluginPlayer) {
+        double chance = getValue(Ability.IMMUNITY, pluginPlayer) / 100;
         if (r.nextDouble() < chance) {
             event.setCancelled(true);
         }
@@ -70,9 +70,9 @@ public class DefenseAbilities extends AbilityProvider implements Listener {
                             type.equals(PotionEffectType.WEAKNESS) || type.equals(PotionEffectType.SLOW_DIGGING) || type.equals(PotionEffectType.SLOW) ||
                             type.equals(PotionEffectType.HUNGER) || type.equals(PotionEffectType.HARM) || type.equals(PotionEffectType.CONFUSION) ||
                             type.equals(PotionEffectType.BLINDNESS)) {
-                        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                        if (playerData == null) return;
-                        double chance = getValue(Ability.NO_DEBUFF, playerData) / 100;
+                        PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                        if (pluginPlayer == null) return;
+                        double chance = getValue(Ability.NO_DEBUFF, pluginPlayer) / 100;
                         if (r.nextDouble() < chance) {
                             if (!player.hasPotionEffect(type)) {
                                 event.setIntensity(entity, 0);
@@ -84,11 +84,11 @@ public class DefenseAbilities extends AbilityProvider implements Listener {
         }
     }
 
-    public void noDebuffFire(PlayerData playerData, Player player, LivingEntity entity) {
+    public void noDebuffFire(PluginPlayer pluginPlayer, Player player, LivingEntity entity) {
         if (entity.getEquipment() != null) {
             ItemStack item = entity.getEquipment().getItemInMainHand();
             if (item != null && item.getEnchantmentLevel(Enchantment.FIRE_ASPECT) > 0) {
-                double chance = getValue(Ability.NO_DEBUFF, playerData) / 100;
+                double chance = getValue(Ability.NO_DEBUFF, pluginPlayer) / 100;
                 if (r.nextDouble() < chance) {
                     new BukkitRunnable() {
                         @Override
@@ -108,16 +108,16 @@ public class DefenseAbilities extends AbilityProvider implements Listener {
                 if (event.getEntity() instanceof Player) {
                     Player player = (Player) event.getEntity();
                     if (blockAbility(player)) return;
-                    PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-                    if (playerData == null) return;
+                    PluginPlayer pluginPlayer = plugin.getPlayerManager().getPlayerData(player);
+                    if (pluginPlayer == null) return;
                     if (plugin.getAbilityManager().isEnabled(Ability.NO_DEBUFF)) {
                         if (event.getDamager() instanceof LivingEntity) {
                             LivingEntity entity = (LivingEntity) event.getDamager();
-                            noDebuffFire(playerData, player, entity);
+                            noDebuffFire(pluginPlayer, player, entity);
                         }
                     }
                     if (plugin.getAbilityManager().isEnabled(Ability.IMMUNITY)) {
-                        immunity(event, playerData);
+                        immunity(event, pluginPlayer);
                     }
                 }
             }

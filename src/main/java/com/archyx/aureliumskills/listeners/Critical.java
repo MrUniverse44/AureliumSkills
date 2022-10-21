@@ -4,7 +4,7 @@ import com.archyx.aureliumskills.AureliumSkills;
 import com.archyx.aureliumskills.ability.Ability;
 import com.archyx.aureliumskills.configuration.Option;
 import com.archyx.aureliumskills.configuration.OptionL;
-import com.archyx.aureliumskills.data.PlayerData;
+import com.archyx.aureliumskills.data.PluginPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -21,10 +21,10 @@ public class Critical {
         this.plugin = plugin;
     }
 
-    public void applyCrit(EntityDamageByEntityEvent event, Player player, PlayerData playerData) {
+    public void applyCrit(EntityDamageByEntityEvent event, Player player, PluginPlayer pluginPlayer) {
         if (plugin.getAbilityManager().isEnabled(Ability.CRIT_CHANCE)) {
-            if (isCrit(playerData)) {
-                event.setDamage(event.getDamage() * getCritMultiplier(playerData));
+            if (isCrit(pluginPlayer)) {
+                event.setDamage(event.getDamage() * getCritMultiplier(pluginPlayer));
                 player.setMetadata("skillsCritical", new FixedMetadataValue(plugin, true));
                 new BukkitRunnable() {
                     @Override
@@ -36,13 +36,13 @@ public class Critical {
         }
     }
 
-    private boolean isCrit(PlayerData playerData) {
-        return r.nextDouble() < (plugin.getAbilityManager().getValue(Ability.CRIT_CHANCE, playerData.getAbilityLevel(Ability.CRIT_CHANCE)) / 100);
+    private boolean isCrit(PluginPlayer pluginPlayer) {
+        return r.nextDouble() < (plugin.getAbilityManager().getValue(Ability.CRIT_CHANCE, pluginPlayer.getAbilityLevel(Ability.CRIT_CHANCE)) / 100);
     }
 
-    private double getCritMultiplier(PlayerData playerData) {
+    private double getCritMultiplier(PluginPlayer pluginPlayer) {
         if (plugin.getAbilityManager().isEnabled(Ability.CRIT_DAMAGE)) {
-            double multiplier = plugin.getAbilityManager().getValue(Ability.CRIT_DAMAGE, playerData.getAbilityLevel(Ability.CRIT_DAMAGE)) / 100;
+            double multiplier = plugin.getAbilityManager().getValue(Ability.CRIT_DAMAGE, pluginPlayer.getAbilityLevel(Ability.CRIT_DAMAGE)) / 100;
             return OptionL.getDouble(Option.CRITICAL_BASE_MULTIPLIER) * (1 + multiplier);
         }
         return OptionL.getDouble(Option.CRITICAL_BASE_MULTIPLIER);
