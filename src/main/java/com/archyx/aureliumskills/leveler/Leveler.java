@@ -207,7 +207,7 @@ public class Leveler {
 	}
 
 	private void levelUpSkill(PlayerData playerData, Skill skill) {
-		Player player = playerData.getPlayer();
+		Player player = playerData.getBukkitPlayer();
 		Locale locale = playerData.getLocale();
 
 		double currentXp = playerData.getSkillXp(skill);

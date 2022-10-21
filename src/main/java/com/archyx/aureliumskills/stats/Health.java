@@ -46,7 +46,7 @@ public class Health implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onLoad(PlayerDataLoadEvent event) {
-		setHealth(event.getPlayerData().getPlayer());
+		setHealth(event.getPlayerData().getBukkitPlayer());
 	}
 
 	public void reload(Player player) {

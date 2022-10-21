@@ -345,7 +345,7 @@ public class AureliumSkills extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (PlayerData playerData : playerManager.getPlayerDataMap().values()) {
-			storageProvider.save(playerData.getPlayer(), false);
+			storageProvider.save(playerData.getBukkitPlayer(), false);
 		}
 		playerManager.getPlayerDataMap().clear();
 		File file = new File(this.getDataFolder(), "config.yml");

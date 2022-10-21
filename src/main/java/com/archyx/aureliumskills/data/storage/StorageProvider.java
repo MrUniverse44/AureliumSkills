@@ -76,11 +76,11 @@ public abstract class StorageProvider {
             plugin.getRewardManager().getRewardTable(skill).applyStats(playerData, level);
         }
         // Reload stats
-        new StatLeveler(plugin).reloadStat(playerData.getPlayer(), Stats.HEALTH);
-        new StatLeveler(plugin).reloadStat(playerData.getPlayer(), Stats.LUCK);
-        new StatLeveler(plugin).reloadStat(playerData.getPlayer(), Stats.WISDOM);
+        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.HEALTH);
+        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.LUCK);
+        new StatLeveler(plugin).reloadStat(playerData.getBukkitPlayer(), Stats.WISDOM);
         // Immediately save to file
-        save(playerData.getPlayer(), false);
+        save(playerData.getBukkitPlayer(), false);
     }
 
     protected Map<Skill, Integer> getLevelsFromBackup(ConfigurationSection playerDataSection, String stringId) {
@@ -104,7 +104,7 @@ public abstract class StorageProvider {
     protected Set<UUID> addLoadedPlayersToLeaderboards(Map<Skill, List<SkillValue>> leaderboards, List<SkillValue> powerLeaderboard, List<SkillValue> averageLeaderboard) {
         Set<UUID> loadedFromMemory = new HashSet<>();
         for (PlayerData playerData : playerManager.getPlayerDataMap().values()) {
-            UUID id = playerData.getPlayer().getUniqueId();
+            UUID id = playerData.getBukkitPlayer().getUniqueId();
             int powerLevel = 0;
             double powerXp = 0;
             int numEnabled = 0;
@@ -128,7 +128,7 @@ public abstract class StorageProvider {
             SkillValue averageValue = new SkillValue(id, 0, averageLevel);
             averageLeaderboard.add(averageValue);
 
-            loadedFromMemory.add(playerData.getPlayer().getUniqueId());
+            loadedFromMemory.add(playerData.getBukkitPlayer().getUniqueId());
         }
         return loadedFromMemory;
     }

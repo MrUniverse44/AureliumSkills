@@ -45,7 +45,7 @@ public class ArmorModifierListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerDataLoadEvent event) {
-        Player player = event.getPlayerData().getPlayer();
+        Player player = event.getPlayerData().getBukkitPlayer();
         PlayerData playerData = event.getPlayerData();
         for (ItemStack armor : player.getInventory().getArmorContents()) {
             if (armor != null) {

@@ -50,7 +50,7 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerDataLoadEvent event) {
-        Player player = event.getPlayerData().getPlayer();
+        Player player = event.getPlayerData().getBukkitPlayer();
         ItemStack held = player.getInventory().getItemInMainHand();
         heldItems.put(player.getUniqueId(), held);
         PlayerData playerData = event.getPlayerData();

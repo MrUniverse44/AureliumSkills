@@ -14,6 +14,7 @@ import com.archyx.aureliumskills.stats.Luck;
 import com.archyx.aureliumskills.stats.Stat;
 import com.archyx.aureliumskills.stats.Stats;
 import com.archyx.aureliumskills.util.misc.KeyIntPair;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class PlayerData {
-
-    private final Player player;
+    private final UUID uniqueId;
     private final AureliumSkills plugin;
 
     private final Map<Skill, Integer> skillLevels;
@@ -45,8 +45,8 @@ public class PlayerData {
     private final Map<String, Multiplier> multipliers;
 
     public PlayerData(Player player, AureliumSkills plugin) {
-        this.player = player;
         this.plugin = plugin;
+        this.uniqueId = player.getUniqueId();
         this.skillLevels = new HashMap<>();
         this.skillXp = new HashMap<>();
         this.statLevels = new HashMap<>();
@@ -60,8 +60,8 @@ public class PlayerData {
         this.multipliers = new HashMap<>();
     }
 
-    public Player getPlayer() {
-        return player;
+    public Player getBukkitPlayer() {
+        return Bukkit.getPlayer(uniqueId);
     }
 
     public AureliumSkills getPlugin() {
@@ -108,6 +108,11 @@ public class PlayerData {
         statLevels.merge(stat, level, Double::sum);
     }
 
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    @SuppressWarnings("unused")
     public void addStatLevel(Stat stat, int level) {
         Double currentLevel = statLevels.get(stat);
         if (currentLevel != null) {
@@ -117,6 +122,7 @@ public class PlayerData {
         }
     }
 
+    @SuppressWarnings("unused")
     public StatModifier getStatModifier(String name) {
         return statModifiers.get(name);
     }
@@ -143,9 +149,9 @@ public class PlayerData {
         // Reloads stats
         if (reload) {
             if (modifier.getStat() == Stats.HEALTH) {
-                plugin.getHealth().reload(player);
+                plugin.getHealth().reload(getBukkitPlayer());
             } else if (modifier.getStat() == Stats.LUCK) {
-                new Luck(plugin).reload(player);
+                new Luck(plugin).reload(getBukkitPlayer());
             }
         }
     }
@@ -162,9 +168,9 @@ public class PlayerData {
         // Reloads stats
         if (reload) {
             if (modifier.getStat() == Stats.HEALTH) {
-                plugin.getHealth().reload(player);
+                plugin.getHealth().reload(getBukkitPlayer());
             } else if (modifier.getStat() == Stats.LUCK) {
-                new Luck(plugin).reload(player);
+                new Luck(plugin).reload(getBukkitPlayer());
             }
         }
         return true;
@@ -335,10 +341,7 @@ public class PlayerData {
                 return false;
             }
         }
-        if (statModifiers.size() > 0) {
-            return false;
-        }
-        return true;
+        return statModifiers.size() <= 0;
     }
 
 }

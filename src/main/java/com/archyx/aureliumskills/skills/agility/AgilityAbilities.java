@@ -229,7 +229,7 @@ public class AgilityAbilities extends AbilityProvider implements Listener {
     public void fleetingJoin(PlayerDataLoadEvent event) {
         if (!OptionL.isEnabled(Skills.AGILITY)) return;
         if (!plugin.getAbilityManager().isEnabled(Ability.FLEETING)) return;
-        Player player = event.getPlayerData().getPlayer();
+        Player player = event.getPlayerData().getBukkitPlayer();
         AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (attribute == null) return;
         if (player.getHealth() < getFleetingHealthRequired() * attribute.getValue()) {

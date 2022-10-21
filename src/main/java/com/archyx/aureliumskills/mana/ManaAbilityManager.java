@@ -190,7 +190,7 @@ public class ManaAbilityManager implements Listener {
                             if (cooldown == 2 || cooldown == 1) {
                                 PlayerData playerData = plugin.getPlayerManager().getPlayerData(id);
                                 if (playerData != null) {
-                                    ManaAbilityRefreshEvent event = new ManaAbilityRefreshEvent(playerData.getPlayer(), ab);
+                                    ManaAbilityRefreshEvent event = new ManaAbilityRefreshEvent(playerData.getBukkitPlayer(), ab);
                                     Bukkit.getPluginManager().callEvent(event);
                                 }
                             }

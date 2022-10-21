@@ -38,7 +38,7 @@ public class Luck implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerDataLoadEvent event) {
-		setLuck(event.getPlayerData().getPlayer());
+		setLuck(event.getPlayerData().getBukkitPlayer());
 	}
 	
 	public void reload(Player player) {

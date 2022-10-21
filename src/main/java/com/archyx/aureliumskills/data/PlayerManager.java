@@ -36,7 +36,7 @@ public class PlayerManager {
     }
 
     public void addPlayerData(@NotNull PlayerData playerData) {
-        this.playerData.put(playerData.getPlayer().getUniqueId(), playerData);
+        this.playerData.put(playerData.getUniqueId(), playerData);
     }
 
     public void removePlayerData(UUID id) {

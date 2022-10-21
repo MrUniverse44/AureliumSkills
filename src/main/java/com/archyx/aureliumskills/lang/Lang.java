@@ -323,7 +323,7 @@ public class Lang implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerDataLoadEvent event) {
-		Player player = event.getPlayerData().getPlayer();
+		Player player = event.getPlayerData().getBukkitPlayer();
 		PlayerData playerData = event.getPlayerData();
 		if (playerData.getLocale() == null) {
 			if (OptionL.getBoolean(Option.TRY_DETECT_CLIENT_LANGUAGE)) {
